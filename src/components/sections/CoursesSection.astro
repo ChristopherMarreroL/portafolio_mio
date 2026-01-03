@@ -1,0 +1,54 @@
+---
+import coursesRaw from "../../data/courses.json";
+import CourseCard from "../CourseCard.astro";
+
+type Course = {
+  type?: string;
+  title: string;
+  provider: string;
+  date?: string;
+  skills?: string[];
+  image?: string;
+  link?: string;
+};
+
+const courses = (coursesRaw as Course[])
+  .slice()
+  .sort((a, b) => {
+    const da = a.date ? new Date(a.date).getTime() : 0;
+    const db = b.date ? new Date(b.date).getTime() : 0;
+    return db - da;
+  });
+
+function groupByType(items: Course[]) {
+  const groups = new Map<string, Course[]>();
+  for (const c of items) {
+    const key = c.type ?? "Otros";
+    groups.set(key, [...(groups.get(key) ?? []), c]);
+  }
+  return Array.from(groups.entries());
+}
+
+const grouped = groupByType(courses);
+
+// Orden visual deseado
+const order = ["Diploma", "Certificación", "Reconocimiento", "Otros"];
+grouped.sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]));
+---
+
+<section id="courses" class="py-10">
+  <div class="flex items-end justify-between gap-4">
+    <h2 class="text-2xl font-semibold tracking-tight">Cursos y certificaciones</h2>
+  </div>
+
+  <div class="mt-6 space-y-8">
+    {grouped.map(([type, items]) => (
+      <div>
+        <h3 class="text-lg font-semibold">{type}</h3>
+        <div class="mt-4 grid gap-4 sm:grid-cols-2">
+          {items.map((c) => <CourseCard course={c} />)}
+        </div>
+      </div>
+    ))}
+  </div>
+</section>

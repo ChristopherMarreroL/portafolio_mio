@@ -1,0 +1,58 @@
+---
+import "../styles/global.css";
+
+import Navbar from "../components/layout/Navbar.astro";
+import Footer from "../components/layout/Footer.astro";
+
+const { title = "Portafolio" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+
+    <meta name="description" content="Portafolio personal" />
+  </head>
+
+  <body
+    class="min-h-screen bg-white text-slate-900 antialiased
+           dark:bg-slate-950 dark:text-slate-100"
+  >
+    <Navbar />
+
+    <main class="mx-auto w-full max-w-5xl px-6 py-10">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <!-- Toggle de tema (dark/light) con preferencia guardada -->
+    <script is:inline>
+      const storageKey = "theme";
+      const root = document.documentElement;
+
+      function applyTheme(theme) {
+        if (theme === "dark") root.classList.add("dark");
+        else root.classList.remove("dark");
+      }
+
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        applyTheme(saved);
+      } else {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        applyTheme(prefersDark ? "dark" : "light");
+      }
+
+      window.toggleTheme = () => {
+        const isDark = root.classList.contains("dark");
+        const next = isDark ? "light" : "dark";
+        applyTheme(next);
+        localStorage.setItem(storageKey, next);
+      };
+    </script>
+  </body>
+</html>

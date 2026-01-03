@@ -1,0 +1,74 @@
+[
+  {
+    "type": "Diploma",
+    "title": "Tecnólogo en Desarrollo de Software (Mención de Honor: Sobresaliente == Summa Cum Laude)",
+    "provider": "Instituto Tecnológico de Las Américas (ITLA)",
+    "date": "2025-05-22",
+    "skills": ["Desarrollo de Software", "Bases de Datos", "Desarrollo Full Stack"],
+    "image": "/certificates/itla-tecnologo-software-2025.webp",
+    "link": ""
+  },
+  {
+    "type": "Certificación",
+    "title": "Programa Inglés de Inmersión para la Competitividad (830 horas)",
+    "provider": "MESCyT - Dirección de Lenguas Extranjeras",
+    "date": "2021-12-15",
+    "skills": ["Inglés", "Comunicación", "Competitividad"],
+    "image": "/certificates/mescyt-ingles-inmersion-2021.webp",
+    "link": ""
+  },
+  {
+    "type": "Certificación",
+    "title": "IT Essentials",
+    "provider": "Cisco Networking Academy",
+    "date": "2022-08-25",
+    "skills": ["Hardware", "Sistemas Operativos", "Redes Básicas", "Troubleshooting"],
+    "image": "/certificates/cisco-it-essentials-certificate-2022.webp",
+    "link": ""
+  },
+  {
+    "type": "Certificación",
+    "title": "Samsung Innovation Campus - Codificación y Programación (90 horas)",
+    "provider": "Samsung Innovation Campus",
+    "date": "2023-08-01",
+    "skills": ["Scratch", "Algoritmos", "Python (Rurple)"],
+    "image": "/certificates/samsung-innovation-campus-2023.webp",
+    "link": ""
+  },
+  {
+    "type": "Diploma",
+    "title": "Técnico en Informática",
+    "provider": "CENTU - Centro de Tecnología Universal",
+    "date": "2023-10-22",
+    "skills": ["Informática", "Soporte", "Computación"],
+    "image": "/certificates/centu-tecnico-informatica-2023.webp",
+    "link": ""
+  },
+  {
+  "type": "Certificación",
+  "title": "Foundational C# with Microsoft",
+  "provider": "freeCodeCamp + Microsoft",
+  "date": "2024-08-24",
+  "skills": ["C#", "Fundamentos", ".NET"],
+  "image": "",
+  "link": "https://freecodecamp.org/certification/fccc9270121-ade5-4097-9e5a-cc99b1d132eb/foundational-c-sharp-with-microsoft"
+},
+  {
+    "type": "Certificación",
+    "title": "Scrum Foundation Professional Certification (SFPC)",
+    "provider": "CertiProf",
+    "date": "2024-03-12",
+    "skills": ["Scrum", "Agile", "Gestión de Proyectos"],
+    "image": "/certificates/certiprof-scrum-foundation-2024.webp",
+    "link": ""
+  },
+  {
+    "type": "Reconocimiento",
+    "title": "Colaborador Destacado del Trimestre (Abril - Junio)",
+    "provider": "SeNaSa - Gerencia de Tecnología de la Información",
+    "date": "2025-06-30",
+    "skills": ["Desempeño", "Compromiso", "Trabajo en Equipo"],
+    "image": "/certificates/senasa-colaborador-destacado-2025.webp",
+    "link": ""
+  }
+]

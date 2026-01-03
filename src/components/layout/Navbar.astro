@@ -1,0 +1,47 @@
+<nav class="border-b border-slate-200 bg-white/70 backdrop-blur
+            dark:border-slate-800 dark:bg-slate-950/70">
+  <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+    <a href="/" class="font-semibold tracking-tight">Portafolio</a>
+
+    <div class="flex items-center gap-3">
+      <button
+  type="button"
+  class="group relative inline-flex h-11 w-24 items-center rounded-full
+         border border-slate-200 bg-white/70 backdrop-blur
+         transition-colors duration-300
+         hover:bg-white
+         dark:border-slate-800 dark:bg-slate-950/70 dark:hover:bg-slate-950"
+  onclick="window.toggleTheme && window.toggleTheme(); updateThemeToggle && updateThemeToggle();"
+  aria-label="Cambiar tema"
+  title="Cambiar tema"
+>
+  <!-- Iconos de fondo -->
+  <span class="absolute left-3 text-lg opacity-80">☀️</span>
+  <span class="absolute right-3 text-lg opacity-80">🌙</span>
+
+  <!-- Thumb deslizante -->
+  <span
+    id="theme-thumb"
+    class="absolute left-1 inline-flex h-9 w-9 items-center justify-center rounded-full
+           bg-slate-900 text-white shadow-sm
+           transition-all duration-300 ease-out
+           dark:translate-x-12 dark:bg-white dark:text-slate-900"
+  >
+    <span id="theme-thumb-icon">☀️</span>
+  </span>
+</button>
+
+<script is:inline>
+  function updateThemeToggle() {
+    const root = document.documentElement;
+    const isDark = root.classList.contains("dark");
+    const icon = document.getElementById("theme-thumb-icon");
+    if (icon) icon.textContent = isDark ? "🌙" : "☀️";
+  }
+
+  updateThemeToggle();
+</script>
+
+    </div>
+  </div>
+</nav>

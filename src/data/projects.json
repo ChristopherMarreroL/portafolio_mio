@@ -1,0 +1,35 @@
+[
+  {
+    "title": "Carta Afiliación",
+    "description": "Módulo web para consultar afiliados y generar la carta de afiliación a partir de datos de identificación.",
+    "tech": ["Next.js", "React", "Tailwind", "API", "SQL Server"],
+    "link": "https://cartaafiliacion.arssenasa.gob.do/",
+    "image": "/projects/carta-afiliacion.webp"
+  },
+  {
+  "title": "Watch.MV",
+  "description": "Plataforma web de streaming desarrollada como proyecto final grupal del ITLA. Incluye autenticación, catálogo visual de películas y diseño inspirado en servicios de streaming modernos.",
+  "tech": ["HTML", "CSS", "JavaScript", "React","UI/UX"],
+  "link": "https://watch-mv.netlify.app/",
+  "image": "/projects/watch-mv.webp"
+},
+{
+  "title": "App Móvil MINERD",
+  "description": "Aplicación móvil desarrollada en Flutter para el Ministerio de Educación (MINERD). Permite registrar y consultar visitas, gestionar incidencias, visualizar mapas, consultar centros educativos y directores, además de módulos informativos como noticias, clima y seguridad.",
+  "tech": ["Flutter", "Dart", "API REST", "UI/UX", "Mobile"],
+  "link": "",
+  "image": "/projects/minerd-app.webp"
+},
+{
+  "title": "App Móvil Uncharted 4",
+  "description": "Aplicación móvil informativa desarrollada en Flutter inspirada en el videojuego Uncharted 4. Incluye secciones de historia, personajes y diseño visual enfocado en experiencia de usuario.",
+  "tech": ["Flutter", "Dart", "UI/UX", "Mobile"],
+  "link": "",
+  "image": "/projects/uncharted4/2.webp",
+  "gallery": [
+    "/projects/uncharted4/1.webp",
+    "/projects/uncharted4/3.webp",
+    "/projects/uncharted4/4.webp"
+  ]
+}
+]
