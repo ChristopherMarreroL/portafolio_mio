@@ -1,47 +1,197 @@
-<nav class="border-b border-slate-200 bg-white/70 backdrop-blur
-            dark:border-slate-800 dark:bg-slate-950/70">
-  <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-    <a href="/" class="font-semibold tracking-tight">Portafolio</a>
+---
+type Lang = "es" | "en";
+const { lang = "en" } = Astro.props as { lang?: Lang };
 
+const homeHref = lang === "es" ? "/es/" : "/en/";
+
+const labels = {
+  projects: lang === "es" ? "Proyectos" : "Projects",
+  courses: lang === "es" ? "Cursos" : "Courses",
+  contact: lang === "es" ? "Contacto" : "Contact",
+  menu: lang === "es" ? "Menú" : "Menu",
+  openMenu: lang === "es" ? "Abrir menú" : "Open menu",
+  theme: lang === "es" ? "Cambiar tema" : "Toggle theme",
+  language: lang === "es" ? "Cambiar idioma" : "Change language",
+};
+---
+
+<nav
+  class="sticky top-0 z-50 relative border-b border-slate-200 bg-white/70 backdrop-blur
+         dark:border-slate-800 dark:bg-slate-950/70"
+>
+  <div class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
     <div class="flex items-center gap-3">
       <button
-  type="button"
-  class="group relative inline-flex h-11 w-24 items-center rounded-full
-         border border-slate-200 bg-white/70 backdrop-blur
-         transition-colors duration-300
-         hover:bg-white
-         dark:border-slate-800 dark:bg-slate-950/70 dark:hover:bg-slate-950"
-  onclick="window.toggleTheme && window.toggleTheme(); updateThemeToggle && updateThemeToggle();"
-  aria-label="Cambiar tema"
-  title="Cambiar tema"
->
-  <!-- Iconos de fondo -->
-  <span class="absolute left-3 text-lg opacity-80">☀️</span>
-  <span class="absolute right-3 text-lg opacity-80">🌙</span>
+        type="button"
+        id="menu-btn"
+        class="inline-flex h-11 w-11 items-center justify-center rounded-lg
+               border border-slate-200 bg-white/70 backdrop-blur
+               transition hover:bg-white
+               dark:border-slate-800 dark:bg-slate-950/70 dark:hover:bg-slate-950
+               md:hidden"
+        aria-label={labels.openMenu}
+        title={labels.menu}
+        onclick="window.toggleMenu && window.toggleMenu()"
+      >
+        ☰
+      </button>
 
-  <!-- Thumb deslizante -->
-  <span
-    id="theme-thumb"
-    class="absolute left-1 inline-flex h-9 w-9 items-center justify-center rounded-full
-           bg-slate-900 text-white shadow-sm
-           transition-all duration-300 ease-out
-           dark:translate-x-12 dark:bg-white dark:text-slate-900"
-  >
-    <span id="theme-thumb-icon">☀️</span>
-  </span>
-</button>
+      <a href={homeHref} class="font-semibold tracking-tight">
+        Christopher
+      </a>
 
-<script is:inline>
-  function updateThemeToggle() {
-    const root = document.documentElement;
-    const isDark = root.classList.contains("dark");
-    const icon = document.getElementById("theme-thumb-icon");
-    if (icon) icon.textContent = isDark ? "🌙" : "☀️";
-  }
+      <div
+        class="hidden md:flex items-center gap-1 rounded-full
+               border border-slate-200 bg-white/60 px-1 py-1 backdrop-blur
+               dark:border-slate-800 dark:bg-slate-950/50"
+      >
+        <a
+          href="#projects"
+          class="rounded-full px-4 py-2 text-sm
+                 text-slate-700 transition hover:bg-slate-100 hover:text-slate-900
+                 dark:text-slate-200 dark:hover:bg-slate-900 dark:hover:text-white"
+        >
+          {labels.projects}
+        </a>
 
-  updateThemeToggle();
-</script>
+        <a
+          href="#courses"
+          class="rounded-full px-4 py-2 text-sm
+                 text-slate-700 transition hover:bg-slate-100 hover:text-slate-900
+                 dark:text-slate-200 dark:hover:bg-slate-900 dark:hover:text-white"
+        >
+          {labels.courses}
+        </a>
 
+        <a
+          href="#contact"
+          class="rounded-full px-4 py-2 text-sm
+                 text-slate-700 transition hover:bg-slate-100 hover:text-slate-900
+                 dark:text-slate-200 dark:hover:bg-slate-900 dark:hover:text-white"
+        >
+          {labels.contact}
+        </a>
+      </div>
+
+      <div
+        id="nav-menu"
+        class="hidden absolute left-6 top-[72px] w-56 rounded-xl border border-slate-200
+               bg-white/90 p-2 shadow-lg backdrop-blur
+               dark:border-slate-800 dark:bg-slate-950/90
+               md:hidden"
+      >
+        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900" href="#projects">
+          {labels.projects}
+        </a>
+        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900" href="#courses">
+          {labels.courses}
+        </a>
+        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900" href="#contact">
+          {labels.contact}
+        </a>
+
+        <div class="my-2 h-px bg-slate-200 dark:bg-slate-800"></div>
+
+        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900"
+           href="https://github.com/ChristopherMarreroL" target="_blank" rel="noreferrer">
+          GitHub
+        </a>
+
+        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900"
+           href="https://www.linkedin.com/in/christopher-e-marrero-l-9168a326b/" target="_blank" rel="noreferrer">
+          LinkedIn
+        </a>
+      </div>
     </div>
+
+    <div class="flex items-center gap-3">
+      <div class="flex flex-col items-end gap-2">
+        <button
+          type="button"
+          class="group relative inline-flex h-11 w-24 items-center rounded-full
+                 border border-slate-200 bg-white/70 backdrop-blur
+                 transition-colors duration-300
+                 hover:bg-white
+                 dark:border-slate-800 dark:bg-slate-950/70 dark:hover:bg-slate-950"
+          onclick="window.toggleTheme && window.toggleTheme(); window.updateThemeToggle && window.updateThemeToggle();"
+          aria-label={labels.theme}
+          title={labels.theme}
+        >
+          <span class="absolute left-3 text-lg opacity-80">☀️</span>
+          <span class="absolute right-3 text-lg opacity-80">🌙</span>
+
+          <span
+            id="theme-thumb"
+            class="absolute left-1 inline-flex h-9 w-9 items-center justify-center rounded-full
+                   bg-slate-900 text-white shadow-sm
+                   transition-all duration-300 ease-out
+                   dark:translate-x-12 dark:bg-white dark:text-slate-900"
+          >
+            <span id="theme-thumb-icon">☀️</span>
+          </span>
+        </button>
+
+        <select
+          id="lang-select"
+          class="h-10 w-[96px] rounded-lg border border-slate-200 bg-white px-2 text-sm
+                 dark:border-slate-800 dark:bg-slate-950"
+          onchange="
+            localStorage.setItem('lang', this.value);
+            location.href = this.value === 'es' ? '/es/' : '/en/';
+          "
+          aria-label={labels.language}
+          title={labels.language}
+        >
+          <option value="es" selected={lang === "es"}>ES</option>
+          <option value="en" selected={lang === "en"}>EN</option>
+        </select>
+      </div>
+    </div>
+
+    <script is:inline>
+      (function () {
+        const sel = document.getElementById("lang-select");
+        if (!sel) return;
+
+        const saved = localStorage.getItem("lang");
+        if (saved === "es" || saved === "en") sel.value = saved;
+
+        if (!saved) {
+          sel.value = location.pathname.startsWith("/es") ? "es" : "en";
+        }
+      })();
+
+      window.toggleMenu = function () {
+        const menu = document.getElementById("nav-menu");
+        if (!menu) return;
+        menu.classList.toggle("hidden");
+      };
+
+      document.addEventListener("click", (e) => {
+        const menu = document.getElementById("nav-menu");
+        const btn = document.getElementById("menu-btn");
+        if (!menu || !btn) return;
+
+        const clickedBtn = btn.contains(e.target);
+        const clickedMenu = menu.contains(e.target);
+
+        if (!clickedBtn && !clickedMenu) menu.classList.add("hidden");
+      });
+
+      document.getElementById("nav-menu")?.addEventListener("click", (e) => {
+        const a = e.target?.closest?.("a");
+        if (!a) return;
+        document.getElementById("nav-menu")?.classList.add("hidden");
+      });
+
+      window.updateThemeToggle = function () {
+        const root = document.documentElement;
+        const isDark = root.classList.contains("dark");
+        const icon = document.getElementById("theme-thumb-icon");
+        if (icon) icon.textContent = isDark ? "🌙" : "☀️";
+      };
+
+      window.updateThemeToggle();
+    </script>
   </div>
 </nav>

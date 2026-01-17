@@ -1,14 +1,41 @@
 ---
-import projects from "../../data/projects.json";
 import ProjectCard from "../ProjectCard.astro";
+import projectsRaw from "../../data/projects.json";
+
+type Lang = "es" | "en";
+type I18nText = { es: string; en: string };
+
+type Project = {
+  title: I18nText;
+  description: I18nText;
+  tech?: string[];
+  link?: string;
+  image?: string;
+  gallery?: string[];
+};
+
+const { lang = "en" } = Astro.props as { lang?: Lang };
+
+const sectionTitle = lang === "es" ? "Proyectos" : "Projects";
+
+const projects = (projectsRaw as Project[]).map((p) => ({
+  ...p,
+  gallery: p.gallery ?? [],
+}));
 ---
 
 <section id="projects" class="py-10">
   <div class="flex items-end justify-between gap-4">
-    <h2 class="text-2xl font-semibold tracking-tight">Proyectos</h2>
+    <h2 class="text-2xl font-semibold tracking-tight">
+      {sectionTitle}
+    </h2>
+
+    <p class="text-sm text-slate-500">
+      {projects.length} total
+    </p>
   </div>
 
   <div class="mt-6 grid gap-4 sm:grid-cols-2">
-    {projects.map((p) => <ProjectCard project={p} />)}
+    {projects.map((p) => <ProjectCard project={p} lang={lang} />)}
   </div>
 </section>

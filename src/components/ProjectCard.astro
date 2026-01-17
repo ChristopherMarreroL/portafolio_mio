@@ -1,19 +1,35 @@
 ---
 import Modal from "./ui/Modal.astro";
 
+type Lang = "es" | "en";
+type I18nText = { es: string; en: string };
+
 type Project = {
-  title: string;
-  description: string;
+  title: I18nText;
+  description: I18nText;
   tech?: string[];
   link?: string;
   image?: string;
   gallery?: string[];
 };
 
-const { project } = Astro.props as { project: Project };
+const { project, lang = "en" } = Astro.props as { project: Project; lang?: Lang };
 
-const modalId = `proj-${project.title.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`;
+const titleText = project.title?.[lang] ?? project.title.en;
+const descText = project.description?.[lang] ?? project.description.en;
+
+const modalId = `proj-${project.title.en.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`;
 const hasGallery = (project.gallery?.length ?? 0) > 0;
+
+const labels = {
+  openProject: lang === "es" ? "Abrir proyecto" : "Open project",
+  viewProject: lang === "es" ? "Ver proyecto" : "View project",
+  viewImages: lang === "es" ? "Ver imágenes" : "View images",
+  viewImage: lang === "es" ? "Ver imagen" : "View image",
+  projectPreviewAlt: lang === "es" ? "Vista del proyecto" : "Project preview",
+  mainViewAlt: lang === "es" ? "Vista principal del proyecto" : "Main project view",
+  thumbAlt: lang === "es" ? "Miniatura" : "Thumbnail",
+};
 ---
 
 <article
@@ -26,7 +42,7 @@ const hasGallery = (project.gallery?.length ?? 0) > 0;
     <div class="relative">
       <img
         src={project.image}
-        alt={`Vista del proyecto ${project.title}`}
+        alt={`${labels.projectPreviewAlt} ${titleText}`}
         class="h-44 w-full object-cover
                transition-transform duration-300 ease-out
                group-hover:scale-[1.03]"
@@ -46,8 +62,8 @@ const hasGallery = (project.gallery?.length ?? 0) > 0;
             href={project.link}
             target="_blank"
             rel="noreferrer"
-            title="Abrir proyecto"
-            aria-label="Abrir proyecto"
+            title={labels.openProject}
+            aria-label={labels.openProject}
             class="inline-flex h-10 w-10 items-center justify-center rounded-lg
                    bg-white/90 text-slate-900 backdrop-blur
                    opacity-0 translate-y-1
@@ -63,8 +79,8 @@ const hasGallery = (project.gallery?.length ?? 0) > 0;
           <>
             <button
               type="button"
-              title="Ver imágenes"
-              aria-label="Ver imágenes del proyecto"
+              title={labels.viewImages}
+              aria-label={labels.viewImages}
               class="inline-flex h-10 w-10 items-center justify-center rounded-lg
                      bg-white/90 text-slate-900 backdrop-blur
                      opacity-0 translate-y-1
@@ -76,57 +92,57 @@ const hasGallery = (project.gallery?.length ?? 0) > 0;
               👁️
             </button>
 
-            <Modal id={modalId} title={project.title}>
-            <div class="space-y-4">
-              <p class="mt-2 text-sm text-slate-400 dark:text-slate-600">
-                {project.description}
-              </p>
+            <Modal id={modalId} title={titleText}>
+              <div class="space-y-4">
+                <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                  {descText}
+                </p>
 
-              <img
-                id={`${modalId}-main`}
-                src={project.gallery?.[0]}
-                alt={`Vista principal del proyecto ${project.title}`}
-                class="w-full rounded-lg border border-slate-200 dark:border-slate-800"
-                loading="lazy"
-              />
+                <img
+                  id={`${modalId}-main`}
+                  src={project.gallery?.[0]}
+                  alt={`${labels.mainViewAlt} ${titleText}`}
+                  class="w-full rounded-lg border border-slate-200 dark:border-slate-800"
+                  loading="lazy"
+                />
 
-              <div class="flex gap-2 overflow-x-auto pb-1">
-                {project.gallery?.map((img: string, idx: number) => (
-                  <button
-                    type="button"
-                    class={`shrink-0 rounded-lg border transition
-                          ${idx === 0 ? "border-slate-900 dark:border-white" : "border-slate-200 dark:border-slate-800"}
-                          hover:opacity-90`}
-                    onclick={`(() => {
-                      const main = document.getElementById('${modalId}-main');
-                      if (main) main.setAttribute('src', '${img}');
-                    })()`}
-                    title="Ver imagen"
-                    aria-label="Ver imagen"
+                <div class="flex gap-2 overflow-x-auto pb-1">
+                  {project.gallery?.map((img: string, idx: number) => (
+                    <button
+                      type="button"
+                      class={`shrink-0 rounded-lg border transition
+                              ${idx === 0 ? "border-slate-900 dark:border-white" : "border-slate-200 dark:border-slate-800"}
+                              hover:opacity-90`}
+                      onclick={`(() => {
+                        const main = document.getElementById('${modalId}-main');
+                        if (main) main.setAttribute('src', '${img}');
+                      })()`}
+                      title={labels.viewImage}
+                      aria-label={labels.viewImage}
+                    >
+                      <img
+                        src={img}
+                        alt={`${labels.thumbAlt} ${idx + 1} — ${titleText}`}
+                        class="h-16 w-24 rounded-lg object-cover"
+                        loading="lazy"
+                      />
+                    </button>
+                  ))}
+                </div>
+
+                {project.link && (
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    class="inline-flex items-center gap-2 text-sm font-medium underline underline-offset-4
+                           text-slate-900 hover:opacity-80 dark:text-slate-100"
                   >
-                    <img
-                      src={img}
-                      alt={`Miniatura ${idx + 1} del proyecto ${project.title}`}
-                      class="h-16 w-24 rounded-lg object-cover"
-                      loading="lazy"
-                    />
-                  </button>
-                ))}
+                    {labels.openProject} <span aria-hidden="true">→</span>
+                  </a>
+                )}
               </div>
-
-              {project.link && (
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noreferrer"
-                  class="inline-flex items-center gap-2 text-sm font-medium underline underline-offset-4
-                        text-slate-900 hover:opacity-80 dark:text-slate-100"
-                >
-                  Abrir proyecto <span aria-hidden="true">→</span>
-                </a>
-              )}
-            </div>
-          </Modal>
+            </Modal>
           </>
         )}
       </div>
@@ -134,10 +150,10 @@ const hasGallery = (project.gallery?.length ?? 0) > 0;
   )}
 
   <div class="p-5">
-    <h3 class="font-semibold tracking-tight">{project.title}</h3>
+    <h3 class="font-semibold tracking-tight">{titleText}</h3>
 
     <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-      {project.description}
+      {descText}
     </p>
 
     <div class="mt-3 flex flex-wrap gap-2">
@@ -164,7 +180,7 @@ const hasGallery = (project.gallery?.length ?? 0) > 0;
                text-slate-900 transition-opacity duration-200 ease-out
                hover:opacity-80 dark:text-slate-100"
       >
-        Ver proyecto <span aria-hidden="true">→</span>
+        {labels.viewProject} <span aria-hidden="true">→</span>
       </a>
     )}
   </div>

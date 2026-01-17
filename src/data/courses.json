@@ -1,73 +1,121 @@
 [
   {
-    "type": "Diploma",
-    "title": "Tecnólogo en Desarrollo de Software (Mención de Honor: Sobresaliente == Summa Cum Laude)",
-    "provider": "Instituto Tecnológico de Las Américas (ITLA)",
+    "type": { "es": "Diploma", "en": "Degree" },
+    "title": {
+      "es": "Tecnólogo en Desarrollo de Software (Mención de Honor: Sobresaliente — Summa Cum Laude)",
+      "en": "Software Development Technologist (Honors: Outstanding — Summa Cum Laude)"
+    },
+    "provider": {
+      "es": "Instituto Tecnológico de Las Américas (ITLA)",
+      "en": "Technological Institute of the Americas (ITLA)"
+    },
     "date": "2025-05-22",
-    "skills": ["Desarrollo de Software", "Bases de Datos", "Desarrollo Full Stack"],
+    "skills": ["Desarrollo de Software", "Bases de Datos", "Full Stack Development"],
     "image": "/certificates/itla-tecnologo-software-2025.webp",
     "link": ""
   },
   {
-    "type": "Certificación",
-    "title": "Programa Inglés de Inmersión para la Competitividad (830 horas)",
-    "provider": "MESCyT - Dirección de Lenguas Extranjeras",
+    "type": { "es": "Certificación", "en": "Certification" },
+    "title": {
+      "es": "Programa Inglés de Inmersión para la Competitividad (830 horas)",
+      "en": "English Immersion Program for Competitiveness (830 hours)"
+    },
+    "provider": {
+      "es": "MESCyT - Dirección de Lenguas Extranjeras",
+      "en": "MESCyT - Foreign Languages Department"
+    },
     "date": "2021-12-15",
-    "skills": ["Inglés", "Comunicación", "Competitividad"],
+    "skills": ["English", "Communication", "Professional Competitiveness"],
     "image": "/certificates/mescyt-ingles-inmersion-2021.webp",
     "link": ""
   },
   {
-    "type": "Certificación",
-    "title": "IT Essentials",
-    "provider": "Cisco Networking Academy",
+    "type": { "es": "Certificación", "en": "Certification" },
+    "title": {
+      "es": "IT Essentials",
+      "en": "IT Essentials"
+    },
+    "provider": {
+      "es": "Cisco Networking Academy",
+      "en": "Cisco Networking Academy"
+    },
     "date": "2022-08-25",
-    "skills": ["Hardware", "Sistemas Operativos", "Redes Básicas", "Troubleshooting"],
+    "skills": ["Hardware", "Operating Systems", "Basic Networking", "Troubleshooting"],
     "image": "/certificates/cisco-it-essentials-certificate-2022.webp",
     "link": ""
   },
   {
-    "type": "Certificación",
-    "title": "Samsung Innovation Campus - Codificación y Programación (90 horas)",
-    "provider": "Samsung Innovation Campus",
+    "type": { "es": "Certificación", "en": "Certification" },
+    "title": {
+      "es": "Samsung Innovation Campus - Codificación y Programación (90 horas)",
+      "en": "Samsung Innovation Campus - Coding and Programming (90 hours)"
+    },
+    "provider": {
+      "es": "Samsung Innovation Campus",
+      "en": "Samsung Innovation Campus"
+    },
     "date": "2023-08-01",
-    "skills": ["Scratch", "Algoritmos", "Python (Rurple)"],
+    "skills": ["Scratch", "Algorithms", "Python (Rurple)"],
     "image": "/certificates/samsung-innovation-campus-2023.webp",
     "link": ""
   },
   {
-    "type": "Diploma",
-    "title": "Técnico en Informática",
-    "provider": "CENTU - Centro de Tecnología Universal",
+    "type": { "es": "Diploma", "en": "Diploma" },
+    "title": {
+      "es": "Técnico en Informática",
+      "en": "Computer Technician"
+    },
+    "provider": {
+      "es": "CENTU - Centro de Tecnología Universal",
+      "en": "CENTU - Universal Technology Center"
+    },
     "date": "2023-10-22",
-    "skills": ["Informática", "Soporte", "Computación"],
+    "skills": ["IT Support", "Computer Systems", "Technical Assistance"],
     "image": "/certificates/centu-tecnico-informatica-2023.webp",
     "link": ""
   },
   {
-  "type": "Certificación",
-  "title": "Foundational C# with Microsoft",
-  "provider": "freeCodeCamp + Microsoft",
-  "date": "2024-08-24",
-  "skills": ["C#", "Fundamentos", ".NET"],
-  "image": "",
-  "link": "https://freecodecamp.org/certification/fccc9270121-ade5-4097-9e5a-cc99b1d132eb/foundational-c-sharp-with-microsoft"
-},
+    "type": { "es": "Certificación", "en": "Certification" },
+    "title": {
+      "es": "Foundational C# with Microsoft",
+      "en": "Foundational C# with Microsoft"
+    },
+    "provider": {
+      "es": "freeCodeCamp + Microsoft",
+      "en": "freeCodeCamp + Microsoft"
+    },
+    "date": "2024-08-24",
+    "skills": ["C#", ".NET", "Fundamentals"],
+    "image": "",
+    "link": "https://freecodecamp.org/certification/fccc9270121-ade5-4097-9e5a-cc99b1d132eb/foundational-c-sharp-with-microsoft"
+  },
   {
-    "type": "Certificación",
-    "title": "Scrum Foundation Professional Certification (SFPC)",
-    "provider": "CertiProf",
+    "type": { "es": "Certificación", "en": "Certification" },
+    "title": {
+      "es": "Scrum Foundation Professional Certification (SFPC)",
+      "en": "Scrum Foundation Professional Certification (SFPC)"
+    },
+    "provider": {
+      "es": "CertiProf",
+      "en": "CertiProf"
+    },
     "date": "2024-03-12",
-    "skills": ["Scrum", "Agile", "Gestión de Proyectos"],
+    "skills": ["Scrum", "Agile", "Project Management"],
     "image": "/certificates/certiprof-scrum-foundation-2024.webp",
     "link": ""
   },
   {
-    "type": "Reconocimiento",
-    "title": "Colaborador Destacado del Trimestre (Abril - Junio)",
-    "provider": "SeNaSa - Gerencia de Tecnología de la Información",
+    "type": { "es": "Reconocimiento", "en": "Recognition" },
+    "title": {
+      "es": "Colaborador Destacado del Trimestre (Abril - Junio)",
+      "en": "Outstanding Employee of the Quarter (April - June)"
+    },
+    "provider": {
+      "es": "SeNaSa - Gerencia de Tecnología de la Información",
+      "en": "SeNaSa - Information Technology Department"
+    },
     "date": "2025-06-30",
-    "skills": ["Desempeño", "Compromiso", "Trabajo en Equipo"],
+    "skills": ["Performance", "Commitment", "Teamwork"],
     "image": "/certificates/senasa-colaborador-destacado-2025.webp",
     "link": ""
   }

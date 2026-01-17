@@ -1,16 +1,23 @@
 ---
-import coursesRaw from "../../data/courses.json";
 import CourseCard from "../CourseCard.astro";
+import coursesRaw from "../../data/courses.json";
+
+type Lang = "es" | "en";
+type I18nText = { es: string; en: string };
 
 type Course = {
-  type?: string;
-  title: string;
-  provider: string;
+  type?: I18nText;
+  title: I18nText;
+  provider: I18nText;
   date?: string;
   skills?: string[];
   image?: string;
   link?: string;
 };
+
+const { lang = "en" } = Astro.props as { lang?: Lang };
+
+const sectionTitle = lang === "es" ? "Cursos y certificaciones" : "Courses & certifications";
 
 const courses = (coursesRaw as Course[])
   .slice()
@@ -20,33 +27,51 @@ const courses = (coursesRaw as Course[])
     return db - da;
   });
 
-function groupByType(items: Course[]) {
-  const groups = new Map<string, Course[]>();
+function groupByType(items: Course[], lang: Lang) {
+  const map = new Map<string, Course[]>();
   for (const c of items) {
-    const key = c.type ?? "Otros";
-    groups.set(key, [...(groups.get(key) ?? []), c]);
+    const key = c.type?.[lang] ?? c.type?.en ?? (lang === "es" ? "Otros" : "Other");
+    map.set(key, [...(map.get(key) ?? []), c]);
   }
-  return Array.from(groups.entries());
+  return Array.from(map.entries());
 }
 
-const grouped = groupByType(courses);
+const grouped = groupByType(courses, lang);
 
-// Orden visual deseado
-const order = ["Diploma", "Certificación", "Reconocimiento", "Otros"];
-grouped.sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0]));
+const orderEs = ["Diploma", "Certificación", "Reconocimiento", "Otros"];
+const orderEn = ["Degree", "Diploma", "Certification", "Recognition", "Other"];
+
+const order = lang === "es" ? orderEs : orderEn;
+
+grouped.sort((a, b) => {
+  const ia = order.indexOf(a[0]);
+  const ib = order.indexOf(b[0]);
+  const ra = ia === -1 ? 999 : ia;
+  const rb = ib === -1 ? 999 : ib;
+  return ra - rb;
+});
 ---
 
 <section id="courses" class="py-10">
   <div class="flex items-end justify-between gap-4">
-    <h2 class="text-2xl font-semibold tracking-tight">Cursos y certificaciones</h2>
+    <h2 class="text-2xl font-semibold tracking-tight">
+      {sectionTitle}
+    </h2>
+
+    <p class="text-sm text-slate-500">
+      {courses.length} total
+    </p>
   </div>
 
   <div class="mt-6 space-y-8">
     {grouped.map(([type, items]) => (
       <div>
-        <h3 class="text-lg font-semibold">{type}</h3>
+        <h3 class="text-lg font-semibold tracking-tight">
+          {type}
+        </h3>
+
         <div class="mt-4 grid gap-4 sm:grid-cols-2">
-          {items.map((c) => <CourseCard course={c} />)}
+          {items.map((c) => <CourseCard course={c} lang={lang} />)}
         </div>
       </div>
     ))}

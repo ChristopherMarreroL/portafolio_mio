@@ -1,49 +1,19 @@
+---
+import type { Lang } from "../../i18n/translations";
+import { t } from "../../i18n/translations";
+
+const { lang = "en" } = Astro.props as { lang?: Lang };
+const tr = t[lang];
+---
+
 <section class="py-10">
-  <p class="text-sm text-slate-500">Hola, soy</p>
+  <p class="text-sm text-slate-500">{tr.hero.hi}</p>
+
   <h1 class="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
     Christopher
   </h1>
 
   <p class="mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-300">
-    Desarrollador enfocado en C# .NET, SQL Server y desarrollo web moderno. Construyo soluciones web y sistemas
-    que resuelven problemas reales.
+    {tr.hero.subtitle}
   </p>
-
-  <div class="mt-6 flex flex-wrap gap-3">
-    <a
-      href="#projects"
-      class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50
-             dark:border-slate-800 dark:hover:bg-slate-900"
-    >
-      Ver proyectos
-    </a>
-
-    <a
-      href="#courses"
-      class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50
-             dark:border-slate-800 dark:hover:bg-slate-900"
-    >
-      Ver cursos
-    </a>
-
-    <a
-      href="https://github.com/ChristopherMarreroL"
-      target="_blank"
-      rel="noreferrer"
-      class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50
-             dark:border-slate-800 dark:hover:bg-slate-900"
-    >
-      GitHub
-    </a>
-
-    <a
-      href="https://www.linkedin.com/in/christopher-e-marrero-l-9168a326b/"
-      target="_blank"
-      rel="noreferrer"
-      class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50
-             dark:border-slate-800 dark:hover:bg-slate-900"
-    >
-      LinkedIn
-    </a>
-  </div>
 </section>

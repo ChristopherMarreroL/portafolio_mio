@@ -1,16 +1,27 @@
----
-import BaseLayout from "../layouts/BaseLayout.astro";
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-import Hero from "../components/sections/Hero.astro";
-import ProjectsSection from "../components/sections/ProjectsSection.astro";
-import CoursesSection from "../components/sections/CoursesSection.astro";
-import ContactSection from "../components/sections/ContactSection.astro";
----
+    <meta http-equiv="refresh" content="0; url=/en/" />
 
+    <script>
+      (function () {
+        const key = "lang";
+        const saved = localStorage.getItem(key);
 
-<BaseLayout title="Christopher | Portafolio">
-  <Hero />
-  <ProjectsSection />
-  <CoursesSection />
-  <ContactSection />
-</BaseLayout>
+        function pickLang() {
+          const n = (navigator.language || "en").toLowerCase();
+          return n.startsWith("es") ? "es" : "en";
+        }
+
+        const lang = saved || pickLang();
+        const target = lang === "es" ? "/es/" : "/en/";
+
+        location.replace(target);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

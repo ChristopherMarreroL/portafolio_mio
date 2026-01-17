@@ -1,27 +1,22 @@
 ---
 import "../styles/global.css";
-
 import Navbar from "../components/layout/Navbar.astro";
 import Footer from "../components/layout/Footer.astro";
 
-const { title = "Portafolio" } = Astro.props;
+const { title = "Portafolio", lang = "en" } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="es" class="scroll-smooth">
+<html lang={lang} class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
-
     <meta name="description" content="Portafolio personal" />
   </head>
 
-  <body
-    class="min-h-screen bg-white text-slate-900 antialiased
-           dark:bg-slate-950 dark:text-slate-100"
-  >
-    <Navbar />
+  <body class="min-h-screen bg-white text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
+    <Navbar lang={lang} />
 
     <main class="mx-auto w-full max-w-5xl px-6 py-10">
       <slot />
