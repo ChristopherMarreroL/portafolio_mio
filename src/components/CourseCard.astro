@@ -99,11 +99,12 @@ const modalId = `cert-${course.title.en.replace(/[^a-z0-9]+/gi, "-").toLowerCase
               {providerText}{course.date ? ` · ${course.date}` : ""}
             </p>
 
-            <img
+<img
               src={course.image}
               alt={`${lang === "es" ? "Certificado" : "Certificate"}: ${titleText}`}
-              class="w-full rounded-lg border border-slate-200 dark:border-slate-800"
+              class="w-full max-w-2xl mx-auto rounded-lg border border-slate-200 dark:border-slate-800 object-contain"
               loading="lazy"
+              style="max-height: 80vh;"
             />
           </div>
         </Modal>
