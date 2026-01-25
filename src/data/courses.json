@@ -104,6 +104,21 @@
     "image": "/certificates/certiprof-scrum-foundation-2024.webp",
     "link": ""
   },
+{
+    "type": { "es": "Certificación", "en": "Certification" },
+    "title": {
+      "es": "Introducción a Cisco Packet Tracer",
+      "en": "Introduction to Cisco Packet Tracer"
+    },
+    "provider": {
+      "es": "Cisco Networking Academy",
+      "en": "Cisco Networking Academy"
+    },
+    "date": "2026-01-24",
+    "skills": ["Networking", "Packet Tracer", "Simulation", "Network Design"],
+    "image": "/certificates/introducción-cisco-packet-tracer-certificate-2026.webp",
+    "link": ""
+  },
   {
     "type": { "es": "Reconocimiento", "en": "Recognition" },
     "title": {
