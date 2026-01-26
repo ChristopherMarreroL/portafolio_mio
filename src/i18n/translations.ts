@@ -5,7 +5,7 @@ export const t = {
     nav: { projects: "Proyectos", courses: "Cursos", contact: "Contacto" },
     hero: {
       hi: "Hola, soy",
-      subtitle: "Desarrollador Full Stack enfocado en la creación de soluciones web y móviles. Construyo aplicaciones escalables, con buena experiencia de usuario y mantenimiento a largo plazo.",
+      subtitle: "Desarrollador de Software Full Stack enfocado en la creación de soluciones web y móviles. Construyo aplicaciones escalables, con buena experiencia de usuario y mantenimiento a largo plazo.",
       viewProjects: "Ver proyectos"
     },
     sections: {
@@ -27,7 +27,7 @@ export const t = {
     nav: { projects: "Projects", courses: "Courses", contact: "Contact" },
     hero: {
       hi: "Hi, I'm",
-      subtitle: "Full Stack Developer focused on building web and mobile solutions. I create scalable applications with strong UX and long-term maintainability.",
+      subtitle: "Full Stack Software Developer focused on building web and mobile solutions. I create scalable applications with strong UX and long-term maintainability.",
       viewProjects: "View projects"
     },
     sections: {
