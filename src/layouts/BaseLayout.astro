@@ -1,10 +1,12 @@
 ---
 import "../styles/global.css";
-
 import Navbar from "../components/layout/Navbar.astro";
 import Footer from "../components/layout/Footer.astro";
 
 const { title = "Portafolio", lang = "en" } = Astro.props as { title?: string; lang?: string };
+
+const SITE = "https://elchrispuntocom.netlify.app";
+const canonical = new URL(Astro.url.pathname, SITE).toString();
 ---
 
 <!doctype html>
@@ -15,7 +17,7 @@ const { title = "Portafolio", lang = "en" } = Astro.props as { title?: string; l
     <title>{title}</title>
     <meta name="description" content="Portafolio personal" />
     <link rel="icon" type="image/webp" href="/logo.webp" />
-    <link rel="canonical" href="https://elchrispuntocom.netlify.app/" />
+    <link rel="canonical" href={canonical} />
 
     <script is:inline>
       (function () {
