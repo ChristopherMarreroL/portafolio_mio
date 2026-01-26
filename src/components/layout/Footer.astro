@@ -1,5 +1,18 @@
-<footer class="border-t border-slate-200 dark:border-slate-800">
-  <div class="mx-auto max-w-5xl px-6 py-8 text-sm text-slate-600 dark:text-slate-400">
-    © {new Date().getFullYear()} Christopher. Hecho con Astro + Tailwind.
+---
+import type { Lang } from "../../i18n/translations";
+import { t } from "../../i18n/translations";
+
+const { lang = "en" } = Astro.props as { lang?: Lang };
+const tr = t[lang];
+---
+
+<footer
+  class="mt-20 border-t border-slate-200 py-8 text-sm text-slate-500
+         dark:border-slate-800 dark:text-slate-400"
+>
+  <div class="mx-auto max-w-5xl px-6 flex flex-col gap-6">
+    <p>
+      © {new Date().getFullYear()} Christopher — {tr.footer.rights}
+    </p>
   </div>
 </footer>

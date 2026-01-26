@@ -15,6 +15,7 @@ const { title = "Portafolio", lang = "en" } = Astro.props as { title?: string; l
     <title>{title}</title>
     <meta name="description" content="Portafolio personal" />
     <link rel="icon" type="image/webp" href="/logo.webp" />
+    <link rel="canonical" href="https://elchrispuntocom.netlify.app/" />
 
     <script is:inline>
       (function () {
@@ -43,7 +44,7 @@ const { title = "Portafolio", lang = "en" } = Astro.props as { title?: string; l
       <slot />
     </main>
 
-    <Footer />
+    <Footer lang={lang} />
 
     <script is:inline>
       const storageKey = "theme";

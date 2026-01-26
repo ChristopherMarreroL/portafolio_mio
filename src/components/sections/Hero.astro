@@ -4,6 +4,20 @@ import { t } from "../../i18n/translations";
 
 const { lang = "en" } = Astro.props as { lang?: Lang };
 const tr = t[lang];
+
+const tech = [
+  { name: "C#", icon: "/tech/csharp.svg" },
+  { name: ".NET", icon: "/tech/dotnet.svg" },
+  { name: "SQL Server", icon: "/tech/sqlserver.svg" },
+  { name: "JavaScript", icon: "/tech/javascript.svg" },
+  { name: "TypeScript", icon: "/tech/typescript.svg" },
+  { name: "HTML", icon: "/tech/html.svg" },
+  { name: "CSS", icon: "/tech/css.svg" },
+  { name: "Tailwind", icon: "/tech/tailwind.svg" },
+  { name: "React", icon: "/tech/react.svg" },
+  { name: "Astro", icon: "/tech/astro.svg" },
+  { name: "Flutter", icon: "/tech/flutter.svg" },
+];
 ---
 
 <section class="py-10">
@@ -16,4 +30,43 @@ const tr = t[lang];
   <p class="mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-300">
     {tr.hero.subtitle}
   </p>
+
+  <div class="mt-6">
+    <p class="text-sm font-medium text-slate-700 dark:text-slate-200">
+      {lang === "es" ? "Tecnologías" : "Technologies"}
+    </p>
+
+    <div class="mt-4 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5">
+      {tech.map((item) => (
+        <div class="group relative">
+          <div
+            class="inline-flex h-22 w-22 sm:h-24 sm:w-24 items-center justify-center rounded-xl
+                   border border-slate-200 bg-white/60 backdrop-blur
+                   transition-all duration-200 ease-out
+                   hover:-translate-y-1 hover:scale-[1.03] hover:bg-white hover:shadow-sm
+                   dark:border-slate-800 dark:bg-slate-950/40 dark:hover:bg-slate-950"
+            aria-label={item.name}
+          >
+            <img
+              src={item.icon}
+              alt={item.name}
+              class="h-18 w-18 sm:h-20 sm:w-20 opacity-80 transition duration-200 ease-out
+                     group-hover:opacity-100 group-hover:scale-105"
+              loading="lazy"
+            />
+          </div>
+          <div
+            class="pointer-events-none absolute left-1/2 top-[52px] -translate-x-1/2
+                   whitespace-nowrap rounded-lg border border-slate-200 bg-white px-2 py-1
+                   text-xs text-slate-700 shadow-sm opacity-0 translate-y-1
+                   transition-all duration-200 ease-out
+                   group-hover:opacity-100 group-hover:translate-y-0
+                   dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
+          >
+            {item.name}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
 </section>
