@@ -1,43 +1,38 @@
 ---
-const { id, title } = Astro.props as {
-  id: string;
-  title?: string;
-};
+const { id, title } = Astro.props;
 ---
 
 <dialog
   id={id}
-  class="modal rounded-2xl p-0 w-[min(900px,92vw)]
-         border border-slate-200 bg-white text-slate-900
+  class="backdrop:bg-black/50 backdrop:backdrop-blur-sm
+         fixed inset-0 m-auto w-[92%] max-w-3xl
+         rounded-2xl border border-slate-200 bg-white p-0
          shadow-2xl
-         dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
+         dark:border-slate-800 dark:bg-slate-950"
 >
-  <div class="flex items-center justify-between gap-4 px-6 py-4 border-b border-slate-200 dark:border-slate-800">
-    <h3 class="text-base font-semibold">{title}</h3>
 
-    <button
-      type="button"
-      class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm
-             hover:bg-slate-50
-             dark:border-slate-800 dark:hover:bg-slate-900"
-      onclick={`document.getElementById('${id}')?.close()`}
-    >
-      Cerrar
-    </button>
-  </div>
+  <!-- Contenedor interno -->
+  <div class="flex flex-col">
 
-  <div class="px-6 py-5">
-    <slot />
+    <!-- Header -->
+    <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4
+                dark:border-slate-800">
+      <h3 class="text-base font-semibold">{title}</h3>
+
+      <button
+        onclick="this.closest('dialog').close()"
+        class="rounded-lg px-3 py-1 text-sm
+               hover:bg-slate-100
+               dark:hover:bg-slate-800"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="max-h-[75vh] overflow-y-auto px-5 py-5">
+      <slot />
+    </div>
+
   </div>
 </dialog>
-
-<style>
-  .modal::backdrop {
-    background: rgba(2, 6, 23, 0.55);
-    backdrop-filter: blur(6px);
-  }
-
-  .modal:focus {
-    outline: none;
-  }
-</style>

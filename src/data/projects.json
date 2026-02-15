@@ -22,17 +22,6 @@
     "gallery": []
   },
   {
-    "title": { "es": "App Móvil MINERD", "en": "MINERD Mobile App" },
-    "description": {
-      "es": "Aplicación móvil desarrollada en Flutter para el Ministerio de Educación (MINERD). Permite registrar y consultar visitas, gestionar incidencias, visualizar mapas, consultar centros educativos y directores, además de módulos informativos como noticias, clima y seguridad.",
-      "en": "Flutter mobile app for the Ministry of Education (MINERD). It supports visit tracking, incident management, maps, school and director lookup, plus informational modules like news, weather, and safety."
-    },
-    "tech": ["Flutter", "Dart", "API REST", "UI/UX", "Mobile"],
-    "link": "",
-    "image": "/projects/minerd-app.webp",
-    "gallery": []
-  },
-  {
     "title": { "es": "App Móvil Uncharted 4", "en": "Uncharted 4 Mobile App" },
     "description": {
       "es": "Aplicación móvil informativa desarrollada en Flutter inspirada en el videojuego Uncharted 4. Incluye secciones de historia, personajes y diseño visual enfocado en experiencia de usuario.",
@@ -46,5 +35,29 @@
       "/projects/uncharted4/3.webp",
       "/projects/uncharted4/4.webp"
     ]
+  },
+  {
+    "title": {
+      "es": "Web de San Valentín",
+      "en": "Valentine's Web"
+    },
+    "description": {
+      "es": "Landing interactiva de San Valentín con una experiencia tipo historia (paso a paso), animaciones suaves y un diseño romántico.",
+      "en": "Interactive Valentine’s landing with a story-like step-by-step experience, smooth animations, and a romantic design."
+    },
+    "tech": ["Astro", "Tailwind", "JavaScript", "UI/UX"],
+    "link": "https://14sanvalentin.netlify.app/",
+    "image": "/projects/SanValentin.webp"
+  },
+  {
+    "title": { "es": "App Móvil MINERD", "en": "MINERD Mobile App" },
+    "description": {
+      "es": "Aplicación móvil desarrollada en Flutter para el Ministerio de Educación (MINERD). Permite registrar y consultar visitas, gestionar incidencias, visualizar mapas, consultar centros educativos y directores, además de módulos informativos como noticias, clima y seguridad.",
+      "en": "Flutter mobile app for the Ministry of Education (MINERD). It supports visit tracking, incident management, maps, school and director lookup, plus informational modules like news, weather, and safety."
+    },
+    "tech": ["Flutter", "Dart", "API REST", "UI/UX", "Mobile"],
+    "link": "",
+    "image": "/projects/minerd-app.webp",
+    "gallery": []
   }
 ]
