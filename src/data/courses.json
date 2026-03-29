@@ -2,11 +2,11 @@
   {
     "type": { "es": "Diploma", "en": "Degree" },
     "title": {
-      "es": "Tecnólogo en Desarrollo de Software (Mención de Honor: Sobresaliente — Summa Cum Laude)",
-      "en": "Software Development Technologist (Honors: Outstanding — Summa Cum Laude)"
+      "es": "Tecnologo en Desarrollo de Software (Mencion de Honor: Sobresaliente - Summa Cum Laude)",
+      "en": "Software Development Technologist (Honors: Outstanding - Summa Cum Laude)"
     },
     "provider": {
-      "es": "Instituto Tecnológico de Las Américas (ITLA)",
+      "es": "Instituto Tecnologico de Las Americas (ITLA)",
       "en": "Technological Institute of the Americas (ITLA)"
     },
     "date": "2025-05-22",
@@ -15,13 +15,13 @@
     "link": ""
   },
   {
-    "type": { "es": "Certificación", "en": "Certification" },
+    "type": { "es": "Certificacion", "en": "Certification" },
     "title": {
-      "es": "Programa Inglés de Inmersión para la Competitividad (830 horas)",
+      "es": "Programa Ingles de Inmersion para la Competitividad (830 horas)",
       "en": "English Immersion Program for Competitiveness (830 hours)"
     },
     "provider": {
-      "es": "MESCyT - Dirección de Lenguas Extranjeras",
+      "es": "MESCyT - Direccion de Lenguas Extranjeras",
       "en": "MESCyT - Foreign Languages Department"
     },
     "date": "2021-12-15",
@@ -30,7 +30,7 @@
     "link": ""
   },
   {
-    "type": { "es": "Certificación", "en": "Certification" },
+    "type": { "es": "Certificacion", "en": "Certification" },
     "title": {
       "es": "IT Essentials",
       "en": "IT Essentials"
@@ -45,9 +45,9 @@
     "link": ""
   },
   {
-    "type": { "es": "Certificación", "en": "Certification" },
+    "type": { "es": "Certificacion", "en": "Certification" },
     "title": {
-      "es": "Samsung Innovation Campus - Codificación y Programación (90 horas)",
+      "es": "Samsung Innovation Campus - Codificacion y Programacion (90 horas)",
       "en": "Samsung Innovation Campus - Coding and Programming (90 hours)"
     },
     "provider": {
@@ -62,11 +62,11 @@
   {
     "type": { "es": "Diploma", "en": "Diploma" },
     "title": {
-      "es": "Técnico en Informática",
+      "es": "Tecnico en Informatica",
       "en": "Computer Technician"
     },
     "provider": {
-      "es": "CENTU - Centro de Tecnología Universal",
+      "es": "CENTU - Centro de Tecnologia Universal",
       "en": "CENTU - Universal Technology Center"
     },
     "date": "2023-10-22",
@@ -75,7 +75,7 @@
     "link": ""
   },
   {
-    "type": { "es": "Certificación", "en": "Certification" },
+    "type": { "es": "Certificacion", "en": "Certification" },
     "title": {
       "es": "Foundational C# with Microsoft",
       "en": "Foundational C# with Microsoft"
@@ -90,7 +90,7 @@
     "link": "https://freecodecamp.org/certification/fccc9270121-ade5-4097-9e5a-cc99b1d132eb/foundational-c-sharp-with-microsoft"
   },
   {
-    "type": { "es": "Certificación", "en": "Certification" },
+    "type": { "es": "Certificacion", "en": "Certification" },
     "title": {
       "es": "Scrum Foundation Professional Certification (SFPC)",
       "en": "Scrum Foundation Professional Certification (SFPC)"
@@ -105,9 +105,9 @@
     "link": ""
   },
   {
-    "type": { "es": "Certificación", "en": "Certification" },
+    "type": { "es": "Certificacion", "en": "Certification" },
     "title": {
-      "es": "Introducción a Cisco Packet Tracer",
+      "es": "Introduccion a Cisco Packet Tracer",
       "en": "Introduction to Cisco Packet Tracer"
     },
     "provider": {
@@ -116,23 +116,24 @@
     },
     "date": "2026-01-24",
     "skills": ["Networking", "Packet Tracer", "Simulation", "Network Design"],
-    "image": "/certificates/introducción-cisco-packet-tracer-certificate-2026.webp",
+    "image": "/certificates/introduccion-cisco-packet-tracer-certificate-2026.webp",
     "link": ""
   },
-    {
+  {
     "type": {
-      "es": "Certificación", "en": "Certification"
+      "es": "Certificacion",
+      "en": "Certification"
     },
     "title": {
       "es": "Ciberseguridad - Nivel Intermedio (80 horas)",
       "en": "Cybersecurity - Intermediate Level (80 hours)"
     },
     "provider": {
-      "es": "Talento Digital (INDOTEL · BID · Cymetria)",
-      "en": "Talento Digital (INDOTEL · IDB · Cymetria)"
+      "es": "Talento Digital (INDOTEL - BID - Cymetria)",
+      "en": "Talento Digital (INDOTEL - IDB - Cymetria)"
     },
     "date": "2026-01-25",
-    "skills": [ "Cybersecurity", "Information Security", "Digital Security", "Risk Awareness" ],
+    "skills": ["Cybersecurity", "Information Security", "Digital Security", "Risk Awareness"],
     "image": "/certificates/indotel-ciberseguridad-2026.webp",
     "link": ""
   },
@@ -143,7 +144,7 @@
       "en": "Outstanding Employee of the Quarter (April - June)"
     },
     "provider": {
-      "es": "SeNaSa - Gerencia de Tecnología de la Información",
+      "es": "SeNaSa - Gerencia de Tecnologia de la Informacion",
       "en": "SeNaSa - Information Technology Department"
     },
     "date": "2025-06-30",

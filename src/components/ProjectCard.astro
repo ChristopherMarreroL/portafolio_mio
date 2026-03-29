@@ -24,7 +24,7 @@ const hasGallery = (project.gallery?.length ?? 0) > 0;
 const labels = {
   openProject: lang === "es" ? "Abrir proyecto" : "Open project",
   viewProject: lang === "es" ? "Ver proyecto" : "View project",
-  viewImages: lang === "es" ? "Ver imágenes" : "View images",
+  viewImages: lang === "es" ? "Ver imagenes" : "View images",
   viewImage: lang === "es" ? "Ver imagen" : "View image",
   projectPreviewAlt: lang === "es" ? "Vista del proyecto" : "Project preview",
   mainViewAlt: lang === "es" ? "Vista principal del proyecto" : "Main project view",
@@ -71,11 +71,11 @@ const labels = {
                    group-hover:opacity-100 group-hover:translate-y-0
                    hover:scale-105 active:scale-95"
           >
-            🔗
+            &#128279;
           </a>
         )}
 
-{hasGallery && (
+        {hasGallery && (
           <>
             <button
               type="button"
@@ -91,7 +91,7 @@ const labels = {
                      opacity-100 translate-y-0"
               onclick={`document.getElementById('${modalId}')?.showModal()`}
             >
-              👁️
+              &#128065;
             </button>
 
             <Modal id={modalId} title={titleText}>
@@ -124,7 +124,7 @@ const labels = {
                     >
                       <img
                         src={img}
-                        alt={`${labels.thumbAlt} ${idx + 1} — ${titleText}`}
+                        alt={`${labels.thumbAlt} ${idx + 1} - ${titleText}`}
                         class="h-16 w-24 rounded-lg object-cover"
                         loading="lazy"
                       />
@@ -140,7 +140,7 @@ const labels = {
                     class="inline-flex items-center gap-2 text-sm font-medium underline underline-offset-4
                            text-slate-900 hover:opacity-80 dark:text-slate-100"
                   >
-                    {labels.openProject} <span aria-hidden="true">→</span>
+                    {labels.openProject} <span aria-hidden="true">&rarr;</span>
                   </a>
                 )}
               </div>
@@ -182,7 +182,7 @@ const labels = {
                text-slate-900 transition-opacity duration-200 ease-out
                hover:opacity-80 dark:text-slate-100"
       >
-        {labels.viewProject} <span aria-hidden="true">→</span>
+        {labels.viewProject} <span aria-hidden="true">&rarr;</span>
       </a>
     )}
   </div>

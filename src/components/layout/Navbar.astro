@@ -8,8 +8,8 @@ const labels = {
   projects: lang === "es" ? "Proyectos" : "Projects",
   courses: lang === "es" ? "Cursos" : "Courses",
   contact: lang === "es" ? "Contacto" : "Contact",
-  menu: lang === "es" ? "Menú" : "Menu",
-  openMenu: lang === "es" ? "Abrir menú" : "Open menu",
+  menu: "Menu",
+  openMenu: lang === "es" ? "Abrir menu" : "Open menu",
   theme: lang === "es" ? "Cambiar tema" : "Toggle theme",
   language: lang === "es" ? "Cambiar idioma" : "Change language",
 };
@@ -33,7 +33,7 @@ const labels = {
         title={labels.menu}
         onclick="window.toggleMenu && window.toggleMenu()"
       >
-        ☰
+        &#9776;
       </button>
 
       <a href={homeHref} class="flex items-center gap-2 font-semibold tracking-tight">
@@ -93,13 +93,21 @@ const labels = {
 
         <div class="my-2 h-px bg-slate-200 dark:bg-slate-800"></div>
 
-        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900"
-           href="https://github.com/ChristopherMarreroL" target="_blank" rel="noreferrer">
+        <a
+          class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900"
+          href="https://github.com/ChristopherMarreroL"
+          target="_blank"
+          rel="noreferrer"
+        >
           GitHub
         </a>
 
-        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900"
-           href="https://www.linkedin.com/in/christopher-e-marrero-l-9168a326b/" target="_blank" rel="noreferrer">
+        <a
+          class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900"
+          href="https://www.linkedin.com/in/christopher-e-marrero-l-9168a326b/"
+          target="_blank"
+          rel="noreferrer"
+        >
           LinkedIn
         </a>
       </div>
@@ -118,8 +126,8 @@ const labels = {
           aria-label={labels.theme}
           title={labels.theme}
         >
-          <span class="absolute left-3 text-lg opacity-80">☀️</span>
-          <span class="absolute right-3 text-lg opacity-80">🌙</span>
+          <span class="absolute left-3 text-lg opacity-80">&#9728;</span>
+          <span class="absolute right-3 text-lg opacity-80">&#127769;</span>
 
           <span
             id="theme-thumb"
@@ -128,7 +136,7 @@ const labels = {
                    transition-all duration-300 ease-out
                    dark:translate-x-12 dark:bg-white dark:text-slate-900"
           >
-            <span id="theme-thumb-icon">☀️</span>
+            <span id="theme-thumb-icon">&#9728;</span>
           </span>
         </button>
 
@@ -189,7 +197,7 @@ const labels = {
         const root = document.documentElement;
         const isDark = root.classList.contains("dark");
         const icon = document.getElementById("theme-thumb-icon");
-        if (icon) icon.textContent = isDark ? "🌙" : "☀️";
+        if (icon) icon.innerHTML = isDark ? "&#127769;" : "&#9728;";
       };
 
       window.updateThemeToggle();

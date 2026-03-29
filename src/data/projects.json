@@ -16,17 +16,17 @@
       "FFmpeg",
       "CSS"
     ],
-    "link": "https://naroz.netlify.app/",
+    "link": "https://naroz.vercel.app/",
     "image": "/projects/Naroz.webp",
     "gallery": []
   },
   {
     "title": {
-      "es": "Carta Afiliación",
+      "es": "Carta Afiliacion",
       "en": "Affiliation Letter"
     },
     "description": {
-      "es": "Módulo web para consultar afiliados y generar la carta de afiliación a partir de datos de identificación.",
+      "es": "Modulo web para consultar afiliados y generar la carta de afiliacion a partir de datos de identificacion.",
       "en": "Web module to look up members and generate an affiliation letter from identification data."
     },
     "tech": [
@@ -46,7 +46,7 @@
       "en": "Watch.MV"
     },
     "description": {
-      "es": "Plataforma web de streaming desarrollada como proyecto final grupal del ITLA. Incluye autenticación, catálogo visual de películas y diseño inspirado en servicios de streaming modernos.",
+      "es": "Plataforma web de streaming desarrollada como proyecto final grupal del ITLA. Incluye autenticacion, catalogo visual de peliculas y diseno inspirado en servicios de streaming modernos.",
       "en": "Streaming web platform built as an ITLA group final project. Includes authentication, a visual movie catalog, and a design inspired by modern streaming services."
     },
     "tech": [
@@ -62,11 +62,11 @@
   },
   {
     "title": {
-      "es": "App Móvil Uncharted 4",
+      "es": "App Movil Uncharted 4",
       "en": "Uncharted 4 Mobile App"
     },
     "description": {
-      "es": "Aplicación móvil informativa desarrollada en Flutter inspirada en el videojuego Uncharted 4. Incluye secciones de historia, personajes y diseño visual enfocado en experiencia de usuario.",
+      "es": "Aplicacion movil informativa desarrollada en Flutter inspirada en el videojuego Uncharted 4. Incluye secciones de historia, personajes y diseno visual enfocado en experiencia de usuario.",
       "en": "Flutter informational mobile app inspired by Uncharted 4. Includes story and characters sections, with a visual design focused on user experience."
     },
     "tech": [
@@ -85,12 +85,12 @@
   },
   {
     "title": {
-      "es": "Web de San Valentín",
+      "es": "Web de San Valentin",
       "en": "Valentine's Web"
     },
     "description": {
-      "es": "Landing interactiva de San Valentín con una experiencia tipo historia (paso a paso), animaciones suaves y un diseño romántico.",
-      "en": "Interactive Valentine’s landing with a story-like step-by-step experience, smooth animations, and a romantic design."
+      "es": "Landing interactiva de San Valentin con una experiencia tipo historia (paso a paso), animaciones suaves y un diseno romantico.",
+      "en": "Interactive Valentine's landing with a story-like step-by-step experience, smooth animations, and a romantic design."
     },
     "tech": [
       "Astro",
@@ -98,16 +98,16 @@
       "JavaScript",
       "UI/UX"
     ],
-    "link": "https://14sanvalentin.netlify.app/",
+    "link": "https://14sanvalentin.vercel.app/",
     "image": "/projects/SanValentin.webp"
   },
   {
     "title": {
-      "es": "App Móvil MINERD",
+      "es": "App Movil MINERD",
       "en": "MINERD Mobile App"
     },
     "description": {
-      "es": "Aplicación móvil desarrollada en Flutter para el Ministerio de Educación (MINERD). Permite registrar y consultar visitas, gestionar incidencias, visualizar mapas, consultar centros educativos y directores, además de módulos informativos como noticias, clima y seguridad.",
+      "es": "Aplicacion movil desarrollada en Flutter para el Ministerio de Educacion (MINERD). Permite registrar y consultar visitas, gestionar incidencias, visualizar mapas, consultar centros educativos y directores, ademas de modulos informativos como noticias, clima y seguridad.",
       "en": "Flutter mobile app for the Ministry of Education (MINERD). It supports visit tracking, incident management, maps, school and director lookup, plus informational modules like news, weather, and safety."
     },
     "tech": [

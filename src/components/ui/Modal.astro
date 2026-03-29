@@ -10,29 +10,20 @@ const { id, title } = Astro.props;
          shadow-2xl
          dark:border-slate-800 dark:bg-slate-950"
 >
-
-  <!-- Contenedor interno -->
   <div class="flex flex-col">
-
-    <!-- Header -->
-    <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4
-                dark:border-slate-800">
+    <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-800">
       <h3 class="text-base font-semibold">{title}</h3>
 
       <button
         onclick="this.closest('dialog').close()"
-        class="rounded-lg px-3 py-1 text-sm
-               hover:bg-slate-100
-               dark:hover:bg-slate-800"
+        class="rounded-lg px-3 py-1 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
       >
-        ✕
+        &times;
       </button>
     </div>
 
-    <!-- Body -->
     <div class="max-h-[75vh] overflow-y-auto px-5 py-5">
       <slot />
     </div>
-
   </div>
 </dialog>
