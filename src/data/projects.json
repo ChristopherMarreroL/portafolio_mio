@@ -22,6 +22,25 @@
   },
   {
     "title": {
+      "es": "Organigrama Institucional",
+      "en": "Institutional Organizational Chart"
+    },
+    "description": {
+      "es": "Aplicacion web para visualizar la estructura institucional de la empresa mediante un organigrama interactivo. Permite explorar de forma clara las areas, dependencias y relaciones organizacionales dentro de la institucion.",
+      "en": "Web application for visualizing the company's institutional structure through an interactive organizational chart. It allows users to clearly explore departments, reporting lines, and organizational relationships across the institution."
+    },
+    "tech": [
+      "React Flow",
+      "Vite",
+      "Tailwind CSS",
+      "TypeScript"
+    ],
+    "link": "https://organigramainstitucional.arssenasa.gob.do/",
+    "image": "/projects/Organigrama.webp",
+    "gallery": []
+  },
+  {
+    "title": {
       "es": "Carta Afiliacion",
       "en": "Affiliation Letter"
     },
