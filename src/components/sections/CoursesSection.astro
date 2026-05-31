@@ -30,7 +30,7 @@ const typeLabels: Record<CredentialType, I18nText> = {
 
 const { data, error } = await supabase
   .from("credentials")
-  .select("*")
+  .select("type,title_es,title_en,issuer,issued_date,description_es,description_en,image_url,credential_url,tags")
   .eq("published", true)
   .order("sort_order", { ascending: true })
   .order("issued_date", { ascending: false });
