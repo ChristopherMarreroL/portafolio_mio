@@ -31,7 +31,7 @@ const { title = "Admin", protect = true } = Astro.props as { title?: string; pro
       </nav>
     </header>
 
-    <main class="mx-auto w-full max-w-6xl px-6 py-8">
+    <main id="admin-main" class:list={["mx-auto w-full max-w-6xl px-6 py-8", protect && "hidden"]}>
       <slot />
     </main>
 
@@ -45,6 +45,7 @@ const { title = "Admin", protect = true } = Astro.props as { title?: string; pro
       const activityKey = "admin-last-activity";
       const protect = document.body.dataset.protect === "true";
       const nav = document.getElementById("admin-nav");
+      const main = document.getElementById("admin-main");
       const brand = document.getElementById("admin-brand") as HTMLAnchorElement | null;
       const logout = document.getElementById("admin-logout");
 
@@ -71,6 +72,7 @@ const { title = "Admin", protect = true } = Astro.props as { title?: string; pro
       if (protect && !data.session) location.href = "/admin/login";
       if (isLogin && data.session) location.href = "/admin/dashboard";
       if (data.session) {
+        main?.classList.remove("hidden");
         nav?.classList.remove("hidden");
         nav?.classList.add("flex");
         logout?.classList.remove("hidden");
@@ -83,6 +85,8 @@ const { title = "Admin", protect = true } = Astro.props as { title?: string; pro
         });
         setInterval(enforceInactivityLimit, 60 * 1000);
       }
+
+      if (!protect) main?.classList.remove("hidden");
 
       logout?.addEventListener("click", async () => {
         await signOutToLogin();

@@ -22,7 +22,7 @@ const sectionTitle = lang === "es" ? "Proyectos" : "Projects";
 
 const { data, error } = await supabase
   .from("projects")
-  .select("*")
+  .select("title_es,title_en,description_es,description_en,image_url,project_url,github_url,tools")
   .eq("published", true)
   .order("sort_order", { ascending: true })
   .order("created_at", { ascending: false });
