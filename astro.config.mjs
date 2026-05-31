@@ -5,7 +5,11 @@ import vercel from "@astrojs/vercel";
 export default defineConfig({
   site: "https://elchrispuntocom.vercel.app",
   output: "server",
-  adapter: vercel(),
+  adapter: vercel({
+    webAnalytics: {
+      enabled: true,
+    },
+  }),
   vite: {
     plugins: [tailwind()],
   },
