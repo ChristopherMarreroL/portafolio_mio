@@ -1,0 +1,49 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Admin Login" protect={false}>
+  <section class="mx-auto max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950">
+    <h1 class="text-2xl font-semibold tracking-tight">Iniciar sesion</h1>
+    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">Accede con el usuario creado en Supabase Auth.</p>
+
+    <form id="login-form" class="mt-6 space-y-4">
+      <label class="block text-sm">
+        Email
+        <input required id="email" type="email" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" />
+      </label>
+      <label class="block text-sm">
+        Password
+        <input required id="password" type="password" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" />
+      </label>
+      <button class="w-full rounded-lg bg-slate-900 px-4 py-2 font-medium text-white hover:opacity-90 dark:bg-white dark:text-slate-900" type="submit">Entrar</button>
+      <p id="login-message" class="text-sm"></p>
+    </form>
+  </section>
+
+  <script>
+    import { supabase } from "../../lib/supabase";
+
+    const form = document.getElementById("login-form") as HTMLFormElement | null;
+    const message = document.getElementById("login-message");
+
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (message) message.textContent = "Entrando...";
+
+      const email = (document.getElementById("email") as HTMLInputElement).value;
+      const password = (document.getElementById("password") as HTMLInputElement).value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        if (message) {
+          message.textContent = error.message;
+          message.className = "text-sm text-red-500";
+        }
+        return;
+      }
+
+      location.href = "/admin/dashboard";
+    });
+  </script>
+</AdminLayout>

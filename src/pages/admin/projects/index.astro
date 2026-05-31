@@ -1,0 +1,97 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Admin Proyectos">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-semibold tracking-tight">Proyectos</h1>
+      <p class="mt-2 text-slate-500 dark:text-slate-400">Administra proyectos, enlaces, imagenes, herramientas y estado publico.</p>
+    </div>
+    <a class="rounded-lg bg-slate-900 px-4 py-2 text-white dark:bg-white dark:text-slate-900" href="/admin/projects/new">Nuevo proyecto</a>
+  </div>
+
+  <p id="projects-message" class="mt-6 text-sm text-slate-500 dark:text-slate-400">Cargando proyectos...</p>
+  <div id="projects-list" class="mt-6 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800"></div>
+
+  <script>
+    import { supabase } from "../../../lib/supabase";
+    import type { Project } from "../../../types/content";
+
+    const list = document.getElementById("projects-list");
+    const message = document.getElementById("projects-message");
+
+    function setMessage(text: string, error = false) {
+      if (!message) return;
+      message.textContent = text;
+      message.className = error ? "mt-6 text-sm text-red-500" : "mt-6 text-sm text-slate-500 dark:text-slate-400";
+    }
+
+    async function loadProjects() {
+      const { data, error } = await supabase.from("projects").select("*").order("sort_order", { ascending: true }).order("created_at", { ascending: false });
+      if (error) {
+        setMessage(error.message, true);
+        return;
+      }
+
+      const projects = (data ?? []) as Project[];
+      setMessage(`${projects.length} proyectos encontrados.`);
+      if (!list) return;
+
+      list.innerHTML = `
+        <table class="w-full min-w-[760px] text-left text-sm">
+          <thead class="bg-slate-50 text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+            <tr>
+              <th class="px-4 py-3">Titulo</th>
+              <th class="px-4 py-3">Orden</th>
+              <th class="px-4 py-3">Destacado</th>
+              <th class="px-4 py-3">Estado</th>
+              <th class="px-4 py-3">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${projects.map((project) => `
+              <tr class="border-t border-slate-200 dark:border-slate-800">
+                <td class="px-4 py-3">
+                  <strong>${project.title_es}</strong>
+                  <span class="block text-xs text-slate-500">${project.slug}</span>
+                </td>
+                <td class="px-4 py-3">${project.sort_order}</td>
+                <td class="px-4 py-3">${project.featured ? "Si" : "No"}</td>
+                <td class="px-4 py-3">${project.published ? "Publicado" : "Borrador"}</td>
+                <td class="px-4 py-3">
+                  <div class="flex flex-wrap gap-2">
+                    <a class="rounded-lg border border-slate-200 px-3 py-1 dark:border-slate-800" href="/admin/projects/edit/${project.id}">Editar</a>
+                    <button class="toggle rounded-lg border border-slate-200 px-3 py-1 dark:border-slate-800" data-id="${project.id}" data-published="${project.published}">${project.published ? "Despublicar" : "Publicar"}</button>
+                    <button class="delete rounded-lg border border-red-200 px-3 py-1 text-red-500 dark:border-red-900" data-id="${project.id}">Eliminar</button>
+                  </div>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+
+      list.querySelectorAll<HTMLButtonElement>(".toggle").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const id = button.dataset.id;
+          const published = button.dataset.published === "true";
+          const { error } = await supabase.from("projects").update({ published: !published }).eq("id", id);
+          if (error) return setMessage(error.message, true);
+          await loadProjects();
+        });
+      });
+
+      list.querySelectorAll<HTMLButtonElement>(".delete").forEach((button) => {
+        button.addEventListener("click", async () => {
+          if (!confirm("Seguro que quieres eliminar este proyecto?")) return;
+          const { error } = await supabase.from("projects").delete().eq("id", button.dataset.id);
+          if (error) return setMessage(error.message, true);
+          await loadProjects();
+        });
+      });
+    }
+
+    await loadProjects();
+  </script>
+</AdminLayout>
