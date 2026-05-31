@@ -9,6 +9,7 @@ type Project = {
   description: I18nText;
   tech?: string[];
   link?: string;
+  github?: string;
   image?: string;
   gallery?: string[];
 };
@@ -24,6 +25,7 @@ const hasGallery = (project.gallery?.length ?? 0) > 0;
 const labels = {
   openProject: lang === "es" ? "Abrir proyecto" : "Open project",
   viewProject: lang === "es" ? "Ver proyecto" : "View project",
+  viewGithub: lang === "es" ? "Ver GitHub" : "View GitHub",
   viewImages: lang === "es" ? "Ver imagenes" : "View images",
   viewImage: lang === "es" ? "Ver imagen" : "View image",
   projectPreviewAlt: lang === "es" ? "Vista del proyecto" : "Project preview",
@@ -147,6 +149,24 @@ const labels = {
             </Modal>
           </>
         )}
+
+        {project.github && (
+          <a
+            href={project.github}
+            target="_blank"
+            rel="noreferrer"
+            title={labels.viewGithub}
+            aria-label={labels.viewGithub}
+            class="inline-flex h-10 w-10 items-center justify-center rounded-lg
+                   bg-white/90 text-slate-900 backdrop-blur
+                   opacity-100 translate-y-0
+                   transition-all duration-200 ease-out
+                   md:opacity-0 md:translate-y-1 md:group-hover:opacity-100 md:group-hover:translate-y-0
+                   hover:scale-105 active:scale-95"
+          >
+            GH
+          </a>
+        )}
       </div>
     </div>
   )}
@@ -183,6 +203,20 @@ const labels = {
                hover:opacity-80 dark:text-slate-100"
       >
         {labels.viewProject} <span aria-hidden="true">&rarr;</span>
+      </a>
+    )}
+
+    {project.github && (
+      <a
+        href={project.github}
+        target="_blank"
+        rel="noreferrer"
+        class="mt-4 ml-4 inline-flex items-center gap-2 text-sm font-medium
+               underline underline-offset-4
+               text-slate-900 transition-opacity duration-200 ease-out
+               hover:opacity-80 dark:text-slate-100"
+      >
+        GitHub <span aria-hidden="true">→</span>
       </a>
     )}
   </div>

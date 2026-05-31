@@ -1,0 +1,69 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Dashboard Admin">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-semibold tracking-tight">Dashboard</h1>
+      <p class="mt-2 text-slate-500 dark:text-slate-400">Resumen del contenido administrable.</p>
+    </div>
+  </div>
+
+  <div id="dashboard-status" class="mt-6 text-sm text-slate-500 dark:text-slate-400">Cargando resumen...</div>
+
+  <section class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <article class="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
+      <p class="text-sm text-slate-500 dark:text-slate-400">Proyectos</p>
+      <strong id="total-projects" class="mt-2 block text-3xl">0</strong>
+    </article>
+    <article class="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
+      <p class="text-sm text-slate-500 dark:text-slate-400">Formacion</p>
+      <strong id="total-credentials" class="mt-2 block text-3xl">0</strong>
+    </article>
+    <article class="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
+      <p class="text-sm text-slate-500 dark:text-slate-400">Publicados</p>
+      <strong id="total-published" class="mt-2 block text-3xl">0</strong>
+    </article>
+    <article class="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
+      <p class="text-sm text-slate-500 dark:text-slate-400">No publicados</p>
+      <strong id="total-unpublished" class="mt-2 block text-3xl">0</strong>
+    </article>
+  </section>
+
+  <div class="mt-8 flex flex-wrap gap-3">
+    <a class="rounded-lg bg-slate-900 px-4 py-2 text-white dark:bg-white dark:text-slate-900" href="/admin/projects/new">Nuevo proyecto</a>
+    <a class="rounded-lg border border-slate-200 px-4 py-2 dark:border-slate-800" href="/admin/credentials/new">Nueva formacion</a>
+  </div>
+
+  <script>
+    import { supabase } from "../../lib/supabase";
+
+    const status = document.getElementById("dashboard-status");
+    const setText = (id: string, value: number) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = String(value);
+    };
+
+    const [{ data: projects, error: projectsError }, { data: credentials, error: credentialsError }] = await Promise.all([
+      supabase.from("projects").select("id,published"),
+      supabase.from("credentials").select("id,published"),
+    ]);
+
+    if (projectsError || credentialsError) {
+      if (status) {
+        status.textContent = projectsError?.message || credentialsError?.message || "Error cargando datos.";
+        status.className = "mt-6 text-sm text-red-500";
+      }
+    } else {
+      const projectRows = projects ?? [];
+      const credentialRows = credentials ?? [];
+      const allRows = [...projectRows, ...credentialRows];
+      setText("total-projects", projectRows.length);
+      setText("total-credentials", credentialRows.length);
+      setText("total-published", allRows.filter((item) => item.published).length);
+      setText("total-unpublished", allRows.filter((item) => !item.published).length);
+      if (status) status.textContent = "Resumen actualizado.";
+    }
+  </script>
+</AdminLayout>

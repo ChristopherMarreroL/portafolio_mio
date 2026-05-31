@@ -1,0 +1,87 @@
+---
+import "../styles/global.css";
+
+const { title = "Admin", protect = true } = Astro.props as { title?: string; protect?: boolean };
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <link rel="icon" type="image/webp" href="/logo.webp" />
+  </head>
+  <body class="min-h-screen bg-white text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100" data-protect={protect ? "true" : "false"}>
+    <header class="border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
+      <nav class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
+        <a href="/admin/login" id="admin-brand" class="flex items-center gap-2 font-semibold tracking-tight">
+          <img src="/logo.webp" alt="Logo" class="h-8 w-8 rounded-full" />
+          Admin Portfolio
+        </a>
+        <div id="admin-nav" class="hidden flex-wrap items-center gap-2 text-sm">
+          <a class="rounded-lg px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-900" href="/admin/dashboard">Dashboard</a>
+          <a class="rounded-lg px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-900" href="/admin/projects">Proyectos</a>
+          <a class="rounded-lg px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-900" href="/admin/credentials">Formacion</a>
+          <a class="rounded-lg px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-900" href="/">Web</a>
+          <button id="admin-logout" class="hidden rounded-lg border border-red-200 px-3 py-2 text-red-600 hover:border-red-300 hover:bg-red-50 hover:text-red-700 dark:border-red-900/70 dark:text-red-400 dark:hover:border-red-800 dark:hover:bg-red-950/50 dark:hover:text-red-300" type="button">Salir</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="mx-auto w-full max-w-6xl px-6 py-8">
+      <slot />
+    </main>
+
+    <script>
+      import { supabase } from "../lib/supabase";
+
+      const inactivityLimit = 30 * 60 * 1000;
+      const activityKey = "admin-last-activity";
+      const protect = document.body.dataset.protect === "true";
+      const nav = document.getElementById("admin-nav");
+      const brand = document.getElementById("admin-brand") as HTMLAnchorElement | null;
+      const logout = document.getElementById("admin-logout");
+
+      const { data } = await supabase.auth.getSession();
+      const isLogin = location.pathname === "/admin/login";
+
+      async function signOutToLogin() {
+        localStorage.removeItem(activityKey);
+        await supabase.auth.signOut();
+        location.href = "/admin/login";
+      }
+
+      function updateActivity() {
+        localStorage.setItem(activityKey, String(Date.now()));
+      }
+
+      async function enforceInactivityLimit() {
+        const lastActivity = Number(localStorage.getItem(activityKey) || 0);
+        if (lastActivity && Date.now() - lastActivity > inactivityLimit) {
+          await signOutToLogin();
+        }
+      }
+
+      if (protect && !data.session) location.href = "/admin/login";
+      if (isLogin && data.session) location.href = "/admin/dashboard";
+      if (data.session) {
+        nav?.classList.remove("hidden");
+        nav?.classList.add("flex");
+        logout?.classList.remove("hidden");
+        if (brand) brand.href = "/admin/dashboard";
+
+        await enforceInactivityLimit();
+        updateActivity();
+        ["click", "keydown", "mousemove", "scroll", "touchstart"].forEach((eventName) => {
+          window.addEventListener(eventName, updateActivity, { passive: true });
+        });
+        setInterval(enforceInactivityLimit, 60 * 1000);
+      }
+
+      logout?.addEventListener("click", async () => {
+        await signOutToLogin();
+      });
+    </script>
+  </body>
+</html>

@@ -1,6 +1,7 @@
 ---
 import ProjectCard from "../ProjectCard.astro";
-import projectsRaw from "../../data/projects.json";
+import { supabase } from "../../lib/supabase";
+import type { Project as DbProject } from "../../types/content";
 
 type Lang = "es" | "en";
 type I18nText = { es: string; en: string };
@@ -10,6 +11,7 @@ type Project = {
   description: I18nText;
   tech?: string[];
   link?: string;
+  github?: string;
   image?: string;
   gallery?: string[];
 };
@@ -18,10 +20,22 @@ const { lang = "en" } = Astro.props as { lang?: Lang };
 
 const sectionTitle = lang === "es" ? "Proyectos" : "Projects";
 
-const projects = (projectsRaw as Project[]).map((p) => ({
-  ...p,
-  gallery: p.gallery ?? [],
-}));
+const { data, error } = await supabase
+  .from("projects")
+  .select("*")
+  .eq("published", true)
+  .order("sort_order", { ascending: true })
+  .order("created_at", { ascending: false });
+
+const projects = ((data ?? []) as DbProject[]).map((p) => ({
+  title: { es: p.title_es, en: p.title_en || p.title_es },
+  description: { es: p.description_es, en: p.description_en || p.description_es },
+  tech: p.tools ?? [],
+  link: p.project_url ?? "",
+  github: p.github_url ?? "",
+  image: p.image_url ?? "",
+  gallery: [],
+})) satisfies Project[];
 ---
 
 <section id="projects" class="py-10">
@@ -34,6 +48,12 @@ const projects = (projectsRaw as Project[]).map((p) => ({
       {projects.length} total
     </p>
   </div>
+
+  {error && (
+    <p class="mt-4 text-sm text-red-500">
+      {lang === "es" ? "No se pudieron cargar los proyectos." : "Projects could not be loaded."}
+    </p>
+  )}
 
   <div class="mt-6 grid gap-4 sm:grid-cols-2">
     {projects.map((p) => <ProjectCard project={p} lang={lang} />)}

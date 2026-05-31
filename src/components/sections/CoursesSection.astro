@@ -1,6 +1,7 @@
 ---
 import CourseCard from "../CourseCard.astro";
-import coursesRaw from "../../data/courses.json";
+import { supabase } from "../../lib/supabase";
+import type { Credential, CredentialType } from "../../types/content";
 
 type Lang = "es" | "en";
 type I18nText = { es: string; en: string };
@@ -19,7 +20,31 @@ const { lang = "en" } = Astro.props as { lang?: Lang };
 
 const sectionTitle = lang === "es" ? "Cursos y certificaciones" : "Courses & certifications";
 
-const courses = (coursesRaw as Course[])
+const typeLabels: Record<CredentialType, I18nText> = {
+  degree: { es: "Estudios", en: "Degrees" },
+  course: { es: "Cursos", en: "Courses" },
+  diploma: { es: "Diploma", en: "Diploma" },
+  certification: { es: "Certificacion", en: "Certification" },
+  recognition: { es: "Reconocimiento", en: "Recognition" },
+};
+
+const { data, error } = await supabase
+  .from("credentials")
+  .select("*")
+  .eq("published", true)
+  .order("sort_order", { ascending: true })
+  .order("issued_date", { ascending: false });
+
+const courses = ((data ?? []) as Credential[])
+  .map((c) => ({
+    type: typeLabels[c.type],
+    title: { es: c.title_es, en: c.title_en || c.title_es },
+    provider: { es: c.issuer, en: c.issuer },
+    date: c.issued_date ?? undefined,
+    skills: c.tags ?? [],
+    image: c.image_url ?? "",
+    link: c.credential_url ?? "",
+  }))
   .slice()
   .sort((a, b) => {
     const da = a.date ? new Date(a.date).getTime() : 0;
@@ -38,8 +63,8 @@ function groupByType(items: Course[], lang: Lang) {
 
 const grouped = groupByType(courses, lang);
 
-const orderEs = ["Diploma", "Certificacion", "Reconocimiento", "Otros"];
-const orderEn = ["Degree", "Diploma", "Certification", "Recognition", "Other"];
+const orderEs = ["Estudios", "Cursos", "Diploma", "Certificacion", "Reconocimiento", "Otros"];
+const orderEn = ["Degrees", "Courses", "Diploma", "Certification", "Recognition", "Other"];
 
 const order = lang === "es" ? orderEs : orderEn;
 
@@ -62,6 +87,12 @@ grouped.sort((a, b) => {
       {courses.length} total
     </p>
   </div>
+
+  {error && (
+    <p class="mt-4 text-sm text-red-500">
+      {lang === "es" ? "No se pudieron cargar las credenciales." : "Credentials could not be loaded."}
+    </p>
+  )}
 
   <div class="mt-6 space-y-8">
     {grouped.map(([type, items]) => (
