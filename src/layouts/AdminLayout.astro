@@ -1,5 +1,7 @@
 ---
 import "../styles/global.css";
+import Analytics from "@vercel/analytics/astro";
+import SpeedInsights from "@vercel/speed-insights/astro";
 
 const { title = "Admin", protect = true } = Astro.props as { title?: string; protect?: boolean };
 ---
@@ -32,6 +34,9 @@ const { title = "Admin", protect = true } = Astro.props as { title?: string; pro
     <main class="mx-auto w-full max-w-6xl px-6 py-8">
       <slot />
     </main>
+
+    <Analytics />
+    <SpeedInsights />
 
     <script>
       import { supabase } from "../lib/supabase";
