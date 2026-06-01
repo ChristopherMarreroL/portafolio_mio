@@ -14,18 +14,49 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       </label>
       <label class="block text-sm">
         Password
-        <input required id="password" type="password" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" />
+        <span class="relative mt-1 block">
+          <input required id="password" type="password" class="admin-password-input w-full rounded-lg border border-slate-200 bg-white py-2 pl-3 pr-12 dark:border-slate-800 dark:bg-slate-950" />
+          <button
+            id="toggle-password"
+            type="button"
+            class="absolute right-2 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300/60 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-white"
+            aria-label="Mostrar contrasena"
+            title="Mostrar contrasena"
+          >
+            <span id="toggle-password-icon" aria-hidden="true">&#128065;</span>
+          </button>
+        </span>
       </label>
       <button class="w-full rounded-lg bg-slate-900 px-4 py-2 font-medium text-white hover:opacity-90 dark:bg-white dark:text-slate-900" type="submit">Entrar</button>
       <p id="login-message" class="text-sm"></p>
     </form>
   </section>
 
+  <style>
+    .admin-password-input::-ms-reveal,
+    .admin-password-input::-ms-clear {
+      display: none;
+    }
+  </style>
+
   <script>
     import { supabase } from "../../lib/supabase";
 
     const form = document.getElementById("login-form") as HTMLFormElement | null;
     const message = document.getElementById("login-message");
+    const passwordInput = document.getElementById("password") as HTMLInputElement | null;
+    const togglePassword = document.getElementById("toggle-password") as HTMLButtonElement | null;
+    const togglePasswordIcon = document.getElementById("toggle-password-icon");
+
+    togglePassword?.addEventListener("click", () => {
+      if (!passwordInput) return;
+
+      const showPassword = passwordInput.type === "password";
+      passwordInput.type = showPassword ? "text" : "password";
+      togglePassword.setAttribute("aria-label", showPassword ? "Ocultar contrasena" : "Mostrar contrasena");
+      togglePassword.setAttribute("title", showPassword ? "Ocultar contrasena" : "Mostrar contrasena");
+      if (togglePasswordIcon) togglePasswordIcon.innerHTML = showPassword ? "&#128584;" : "&#128065;";
+    });
 
     form?.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -42,6 +73,8 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         }
         return;
       }
+
+      sessionStorage.setItem("admin_last_activity_at", String(Date.now()));
 
       location.href = "/admin/dashboard";
     });

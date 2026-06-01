@@ -36,8 +36,9 @@ const { title = "Admin", protect = true } = Astro.props as { title?: string; pro
     <script>
       import { supabase } from "../lib/supabase";
 
-      const inactivityLimit = 30 * 60 * 1000;
-      const activityKey = "admin-last-activity";
+      const ADMIN_IDLE_TIMEOUT_MS = 15 * 60 * 1000;
+      const activityKey = "admin_last_activity_at";
+      const expiredKey = "admin_session_expired";
       const protect = document.body.dataset.protect === "true";
       const nav = document.getElementById("admin-nav");
       const main = document.getElementById("admin-main");
@@ -46,27 +47,47 @@ const { title = "Admin", protect = true } = Astro.props as { title?: string; pro
 
       const { data } = await supabase.auth.getSession();
       const isLogin = location.pathname === "/admin/login";
+      let hasSession = Boolean(data.session);
 
-      async function signOutToLogin() {
-        localStorage.removeItem(activityKey);
+      async function signOutToLogin(expired = false) {
+        sessionStorage.removeItem(activityKey);
+        if (expired) sessionStorage.setItem(expiredKey, "true");
         await supabase.auth.signOut();
         location.href = "/admin/login";
       }
 
       function updateActivity() {
-        localStorage.setItem(activityKey, String(Date.now()));
+        sessionStorage.setItem(activityKey, String(Date.now()));
+      }
+
+      function isSessionExpired() {
+        const lastActivity = Number(sessionStorage.getItem(activityKey) || 0);
+        return Boolean(lastActivity && Date.now() - lastActivity > ADMIN_IDLE_TIMEOUT_MS);
       }
 
       async function enforceInactivityLimit() {
-        const lastActivity = Number(localStorage.getItem(activityKey) || 0);
-        if (lastActivity && Date.now() - lastActivity > inactivityLimit) {
-          await signOutToLogin();
+        if (isSessionExpired()) {
+          await signOutToLogin(true);
         }
       }
 
-      if (protect && !data.session) location.href = "/admin/login";
-      if (isLogin && data.session) location.href = "/admin/dashboard";
-      if (data.session) {
+      if (isLogin && sessionStorage.getItem(expiredKey) === "true") {
+        sessionStorage.removeItem(expiredKey);
+        const message = document.getElementById("login-message");
+        if (message) {
+          message.textContent = "Tu sesion expiro por inactividad. Vuelve a iniciar sesion.";
+          message.className = "text-sm text-amber-500";
+        }
+      }
+
+      if (hasSession && isSessionExpired()) {
+        await signOutToLogin(true);
+        hasSession = false;
+      }
+
+      if (protect && !hasSession) location.href = "/admin/login";
+      if (isLogin && hasSession) location.href = "/admin/dashboard";
+      if (hasSession) {
         main?.classList.remove("hidden");
         nav?.classList.remove("hidden");
         nav?.classList.add("flex");
@@ -75,7 +96,7 @@ const { title = "Admin", protect = true } = Astro.props as { title?: string; pro
 
         await enforceInactivityLimit();
         updateActivity();
-        ["click", "keydown", "mousemove", "scroll", "touchstart"].forEach((eventName) => {
+        ["mousemove", "mousedown", "keydown", "scroll", "touchstart", "click"].forEach((eventName) => {
           window.addEventListener(eventName, updateActivity, { passive: true });
         });
         setInterval(enforceInactivityLimit, 60 * 1000);

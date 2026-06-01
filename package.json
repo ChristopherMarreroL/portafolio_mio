@@ -12,6 +12,7 @@
     "@astrojs/vercel": "^9.0.5",
     "@supabase/supabase-js": "^2.106.2",
     "astro": "^5.16.5",
+    "gsap": "^3.15.0",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
