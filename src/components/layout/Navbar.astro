@@ -118,56 +118,107 @@ const labels = {
         <button
           type="button"
           class="group relative inline-flex h-11 w-24 items-center rounded-full
-                 border border-slate-200 bg-white/70 backdrop-blur
-                 transition-colors duration-300
-                 hover:bg-white
-                 dark:border-slate-800 dark:bg-slate-950/70 dark:hover:bg-slate-950"
+                 border border-slate-200 bg-white/75 p-1 backdrop-blur
+                 shadow-sm transition-[transform,background-color,border-color,box-shadow] duration-300
+                 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03] hover:bg-white hover:shadow-md
+                 active:scale-[0.97] motion-reduce:transition-none motion-reduce:hover:scale-100
+                 dark:border-slate-800 dark:bg-slate-950/75 dark:hover:bg-slate-950"
           onclick="window.toggleTheme && window.toggleTheme(); window.updateThemeToggle && window.updateThemeToggle();"
           aria-label={labels.theme}
           title={labels.theme}
         >
-          <span class="absolute left-3 text-lg opacity-80">&#9728;</span>
-          <span class="absolute right-3 text-lg opacity-80">&#127769;</span>
+          <span class="absolute left-3 text-lg opacity-75 transition-all duration-300 group-hover:scale-110 dark:opacity-35">&#9728;</span>
+          <span class="absolute right-3 text-lg opacity-35 transition-all duration-300 group-hover:scale-110 dark:opacity-80">&#127769;</span>
 
           <span
             id="theme-thumb"
             class="absolute left-1 inline-flex h-9 w-9 items-center justify-center rounded-full
-                   bg-slate-900 text-white shadow-sm
-                   transition-all duration-300 ease-out
-                   dark:translate-x-12 dark:bg-white dark:text-slate-900"
+                   bg-slate-900 text-white shadow-lg shadow-slate-900/20
+                   transition-[transform,background-color,color,box-shadow] duration-300
+                   ease-[cubic-bezier(0.22,1,0.36,1)]
+                   dark:translate-x-12 dark:bg-white dark:text-slate-900 dark:shadow-white/10"
           >
-            <span id="theme-thumb-icon">&#9728;</span>
+            <span id="theme-thumb-icon" class="transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">&#9728;</span>
           </span>
         </button>
 
-        <select
-          id="lang-select"
-          class="h-10 w-[96px] rounded-lg border border-slate-200 bg-white px-2 text-sm
-                 dark:border-slate-800 dark:bg-slate-950"
-          onchange="
-            localStorage.setItem('lang', this.value);
-            location.href = this.value === 'es' ? '/es/' : '/en/';
-          "
+        <div
+          id="lang-toggle"
+          class="relative grid h-11 w-[104px] grid-cols-2 rounded-full border border-slate-200
+                 bg-white/75 p-1 text-sm font-medium shadow-sm backdrop-blur
+                 transition-[transform,background-color,border-color,box-shadow] duration-300
+                 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03] hover:bg-white hover:shadow-md
+                 motion-reduce:transition-none motion-reduce:hover:scale-100
+                 dark:border-slate-800 dark:bg-slate-950/75 dark:hover:bg-slate-950"
+          role="group"
           aria-label={labels.language}
           title={labels.language}
         >
-          <option value="es" selected={lang === "es"}>ES</option>
-          <option value="en" selected={lang === "en"}>EN</option>
-        </select>
+          <span
+            id="lang-thumb"
+            class="absolute left-1 top-1 h-9 w-[46px] rounded-full bg-slate-900 shadow-lg shadow-slate-900/15
+                   transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]
+                   dark:bg-white dark:shadow-white/10"
+          ></span>
+          <button
+            type="button"
+            data-lang="es"
+            class="relative z-10 rounded-full text-slate-600 transition-colors duration-300
+                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300/60
+                   active:scale-95 dark:text-slate-300"
+            aria-label="Cambiar a espanol"
+          >
+            ES
+          </button>
+          <button
+            type="button"
+            data-lang="en"
+            class="relative z-10 rounded-full text-slate-600 transition-colors duration-300
+                   focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300/60
+                   active:scale-95 dark:text-slate-300"
+            aria-label="Change to English"
+          >
+            EN
+          </button>
+        </div>
       </div>
     </div>
 
     <script is:inline>
       (function () {
-        const sel = document.getElementById("lang-select");
-        if (!sel) return;
+        const toggle = document.getElementById("lang-toggle");
+        const thumb = document.getElementById("lang-thumb");
+        const buttons = toggle ? Array.from(toggle.querySelectorAll("button[data-lang]")) : [];
+        if (!toggle || !thumb || buttons.length === 0) return;
 
         const saved = localStorage.getItem("lang");
-        if (saved === "es" || saved === "en") sel.value = saved;
+        const current = saved === "es" || saved === "en"
+          ? saved
+          : (location.pathname.startsWith("/es") ? "es" : "en");
 
-        if (!saved) {
-          sel.value = location.pathname.startsWith("/es") ? "es" : "en";
+        function updateLanguageToggle(next) {
+          thumb.style.transform = next === "en" ? "translateX(50px)" : "translateX(0)";
+          buttons.forEach((btn) => {
+            const active = btn.dataset.lang === next;
+            btn.setAttribute("aria-pressed", String(active));
+            btn.classList.toggle("text-white", active);
+            btn.classList.toggle("dark:text-slate-950", active);
+            btn.classList.toggle("text-slate-600", !active);
+            btn.classList.toggle("dark:text-slate-300", !active);
+          });
         }
+
+        updateLanguageToggle(current);
+
+        buttons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const next = btn.dataset.lang;
+            if (next !== "es" && next !== "en") return;
+            localStorage.setItem("lang", next);
+            updateLanguageToggle(next);
+            location.href = next === "es" ? "/es/" : "/en/";
+          });
+        });
       })();
 
       window.toggleMenu = function () {
@@ -197,7 +248,13 @@ const labels = {
         const root = document.documentElement;
         const isDark = root.classList.contains("dark");
         const icon = document.getElementById("theme-thumb-icon");
-        if (icon) icon.innerHTML = isDark ? "&#127769;" : "&#9728;";
+        if (icon) {
+          icon.innerHTML = isDark ? "&#127769;" : "&#9728;";
+          icon.style.transform = "scale(0.72) rotate(-18deg)";
+          window.setTimeout(() => {
+            icon.style.transform = "scale(1) rotate(0deg)";
+          }, 80);
+        }
       };
 
       window.updateThemeToggle();

@@ -1,62 +1,68 @@
 ---
 import type { Lang } from "../../i18n/translations";
 import { t } from "../../i18n/translations";
+import TechnologyCarousel from "../TechnologyCarousel.astro";
 
 const { lang = "en" } = Astro.props as { lang?: Lang };
 const tr = t[lang];
 
 const tech = [
-  { name: "C#", icon: "/tech/csharp.svg" },
-  { name: ".NET", icon: "/tech/dotnet.svg" },
-  { name: "SQL Server", icon: "/tech/sqlserver.svg" },
-  { name: "JavaScript", icon: "/tech/javascript.svg" },
-  { name: "TypeScript", icon: "/tech/typescript.svg" },
-  { name: "HTML", icon: "/tech/html.svg" },
-  { name: "CSS", icon: "/tech/css.svg" },
-  { name: "Tailwind", icon: "/tech/tailwind.svg" },
-  { name: "React", icon: "/tech/react.svg" },
-  { name: "Astro", icon: "/tech/astro.svg" },
-  { name: "Flutter", icon: "/tech/flutter.svg" }
+  { name: "C#", icon: "/tech/csharp.svg", category: "Backend" },
+  { name: ".NET", icon: "/tech/dotnet.svg", category: "Backend" },
+  { name: "SQL Server", icon: "/tech/sqlserver.svg", category: "Database" },
+  { name: "JavaScript", icon: "/tech/javascript.svg", category: "Frontend" },
+  { name: "TypeScript", icon: "/tech/typescript.svg", category: "Frontend" },
+  { name: "HTML", icon: "/tech/html.svg", category: "Markup" },
+  { name: "CSS", icon: "/tech/css.svg", category: "Styles" },
+  { name: "Tailwind", icon: "/tech/tailwind.svg", category: "Styles" },
+  { name: "React", icon: "/tech/react.svg", category: "UI" },
+  { name: "Astro", icon: "/tech/astro.svg", category: "Framework" },
+  { name: "Flutter", icon: "/tech/flutter.svg", category: "Mobile" }
 ];
+
+const name = "Christopher";
 ---
 
 <section class="py-10">
-  <p class="mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-300">{tr.hero.hi}</p>
+  <p data-animate="hero-greeting" class="mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-300">{tr.hero.hi}</p>
 
-  <h1 class="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
-    Christopher
+  <h1 data-animate="hero-name" class="mt-2 overflow-hidden text-4xl font-bold tracking-tight sm:text-5xl" aria-label={name}>
+    <span class="sr-only">{name}</span>
+    <span data-animate="hero-name-word" aria-hidden="true" class="inline-flex">
+      {name.split("").map((letter) => (
+        <span data-animate="hero-letter" class="inline-block will-change-transform">
+          {letter}
+        </span>
+      ))}
+    </span>
   </h1>
 
-  <p class="mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-300">
+  <p data-animate="hero-description" class="mt-4 max-w-2xl text-base text-slate-600 dark:text-slate-300">
     {tr.hero.subtitle}
   </p>
 
-  <div class="mt-6">
-    <p class="text-sm font-medium text-slate-700 dark:text-slate-200">
-      {lang === "es" ? "Tecnologias" : "Technologies"}
-    </p>
-
-    <div class="mt-4 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5">
-      {tech.map((item) => (
-        <div class="group relative">
-          <div
-            class="inline-flex h-22 w-22 items-center justify-center rounded-xl border border-slate-200 bg-white/60 backdrop-blur transition-all duration-200 ease-out hover:-translate-y-1 hover:scale-[1.03] hover:bg-white hover:shadow-sm sm:h-24 sm:w-24 dark:border-slate-800 dark:bg-slate-950/40 dark:hover:bg-slate-950"
-            aria-label={item.name}
-          >
-            <img
-              src={item.icon}
-              alt={item.name}
-              class="h-18 w-18 opacity-80 transition duration-200 ease-out group-hover:scale-105 group-hover:opacity-100 sm:h-20 sm:w-20"
-              loading="lazy"
-            />
-          </div>
-          <div
-            class="pointer-events-none absolute left-1/2 top-[52px] -translate-x-1/2 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 opacity-0 shadow-sm translate-y-1 transition-all duration-200 ease-out group-hover:translate-y-0 group-hover:opacity-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
-          >
-            {item.name}
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
+  <TechnologyCarousel tech={tech} lang={lang} />
 </section>
+
+<script>
+  import { gsap } from "gsap";
+
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (!prefersReducedMotion) {
+    const greeting = document.querySelector('[data-animate="hero-greeting"]');
+    const name = document.querySelector('[data-animate="hero-name"]');
+    const letters = gsap.utils.toArray<HTMLElement>('[data-animate="hero-letter"]');
+    const description = document.querySelector('[data-animate="hero-description"]');
+
+    const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+    timeline
+      .fromTo(greeting, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.65 })
+      .fromTo(name, { opacity: 0, scale: 0.9, filter: "blur(10px)" }, { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.42 }, "-=0.15")
+      .fromTo(letters, { opacity: 0, y: 44, rotateX: -55 }, { opacity: 1, y: 0, rotateX: 0, duration: 0.7, stagger: 0.035 }, "-=0.18")
+      .to(name, { textShadow: "0 0 28px rgba(14, 165, 233, 0.22)", duration: 0.22 }, "-=0.28")
+      .to(name, { textShadow: "0 0 0 rgba(14, 165, 233, 0)", duration: 0.5 })
+      .fromTo(description, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.65 }, "-=0.45");
+  }
+</script>
