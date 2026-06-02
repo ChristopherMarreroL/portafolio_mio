@@ -25,12 +25,13 @@ const modalId = `cert-${course.title.en.replace(/[^a-z0-9]+/gi, "-").toLowerCase
 
 <article
   class="transform-gpu rounded-xl border border-slate-200 bg-white p-5
-         transition-[transform,box-shadow,border-color,background-color] duration-[420ms]
+         shadow-[0_12px_36px_rgba(15,23,42,0.06)]
+         transition-[transform,box-shadow,border-color,background-color] duration-500
          ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform
-         hover:-translate-y-2 hover:scale-[1.025] hover:border-slate-300
-         hover:shadow-2xl hover:shadow-black/10
+         hover:-translate-y-1.5 hover:scale-[1.02] hover:border-slate-300
+         hover:shadow-[0_24px_70px_rgba(15,23,42,0.14)]
          motion-reduce:transform-none motion-reduce:transition-none
-         dark:border-slate-800 dark:bg-slate-950 dark:hover:shadow-black/30"
+         dark:border-slate-800 dark:bg-slate-950 dark:shadow-black/20 dark:hover:shadow-[0_24px_70px_rgba(0,0,0,0.34)]"
 >
   {typeText && (
     <p class="text-xs text-slate-500 dark:text-slate-400">
