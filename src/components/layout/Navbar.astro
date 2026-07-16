@@ -2,7 +2,7 @@
 type Lang = "es" | "en";
 const { lang = "en" } = Astro.props as { lang?: Lang };
 
-const homeHref = lang === "es" ? "/es/" : "/en/";
+const homeHref = "/";
 
 const labels = {
   projects: lang === "es" ? "Proyectos" : "Projects",
@@ -191,10 +191,7 @@ const labels = {
         const buttons = toggle ? Array.from(toggle.querySelectorAll("button[data-lang]")) : [];
         if (!toggle || !thumb || buttons.length === 0) return;
 
-        const saved = localStorage.getItem("lang");
-        const current = saved === "es" || saved === "en"
-          ? saved
-          : (location.pathname.startsWith("/es") ? "es" : "en");
+        let current = document.documentElement.lang === "es" ? "es" : "en";
 
         function updateLanguageToggle(next) {
           thumb.style.transform = next === "en" ? "translateX(50px)" : "translateX(0)";
@@ -211,16 +208,40 @@ const labels = {
         updateLanguageToggle(current);
 
         buttons.forEach((btn) => {
-          btn.addEventListener("click", () => {
+          btn.addEventListener("click", async () => {
             const next = btn.dataset.lang;
-            if (next !== "es" && next !== "en") return;
-            localStorage.setItem("lang", next);
-            updateLanguageToggle(next);
-            location.href = next === "es" ? "/es/" : "/en/";
+            if ((next !== "es" && next !== "en") || next === current) return;
+
+            toggle.setAttribute("aria-busy", "true");
+            buttons.forEach((button) => {
+              button.disabled = true;
+            });
+
+            try {
+              const response = await fetch("/api/language", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({ lang: next }),
+              });
+
+              if (!response.ok) throw new Error("Language preference could not be saved.");
+
+              current = next;
+              updateLanguageToggle(next);
+              location.reload();
+            } catch (error) {
+              console.error(error);
+              toggle.removeAttribute("aria-busy");
+              buttons.forEach((button) => {
+                button.disabled = false;
+              });
+            }
           });
         });
       })();
-
       window.toggleMenu = function () {
         const menu = document.getElementById("nav-menu");
         if (!menu) return;
