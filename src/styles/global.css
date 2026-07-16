@@ -6,3 +6,11 @@
   transition-duration: 180ms;
   transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+
+html {
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
