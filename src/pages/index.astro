@@ -1,27 +1,32 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/sections/Hero.astro";
+import ProjectsSection from "../components/sections/ProjectsSection.astro";
+import CoursesSection from "../components/sections/CoursesSection.astro";
+import ContactSection from "../components/sections/ContactSection.astro";
 
-    <meta http-equiv="refresh" content="0; url=/en/" />
+type Lang = "es" | "en";
 
-    <script>
-      (function () {
-        const key = "lang";
-        const saved = localStorage.getItem(key);
+Astro.response.headers.set("Vary", "Accept-Language, Cookie");
 
-        function pickLang() {
-          const n = (navigator.language || "en").toLowerCase();
-          return n.startsWith("es") ? "es" : "en";
-        }
+const savedLanguage = Astro.cookies.get("lang")?.value;
+const primaryLanguage = Astro.request.headers
+  .get("accept-language")
+  ?.split(",")[0]
+  ?.trim()
+  .toLowerCase();
 
-        const lang = saved || pickLang();
-        const target = lang === "es" ? "/es/" : "/en/";
+const detectedLanguage: Lang = primaryLanguage?.startsWith("es") ? "es" : "en";
+const lang: Lang = savedLanguage === "es" || savedLanguage === "en"
+  ? savedLanguage
+  : detectedLanguage;
 
-        location.replace(target);
-      })();
-    </script>
-  </head>
-  <body></body>
-</html>
+const title = lang === "es" ? "Christopher | Portafolio" : "Christopher | Portfolio";
+---
+
+<BaseLayout title={title} lang={lang}>
+  <Hero lang={lang} />
+  <ProjectsSection lang={lang} />
+  <CoursesSection lang={lang} />
+  <ContactSection lang={lang} />
+</BaseLayout>
