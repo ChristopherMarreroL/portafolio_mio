@@ -1,6 +1,7 @@
 ---
 import CourseCard from "../CourseCard.astro";
 import { supabase } from "../../lib/supabase";
+import { safeHttpUrl } from "../../lib/urls";
 import type { Credential, CredentialType } from "../../types/content";
 
 type Lang = "es" | "en";
@@ -14,6 +15,7 @@ type Course = {
   skills?: string[];
   image?: string;
   link?: string;
+  sortOrder: number;
 };
 
 const { lang = "en" } = Astro.props as { lang?: Lang };
@@ -30,7 +32,7 @@ const typeLabels: Record<CredentialType, I18nText> = {
 
 const { data, error } = await supabase
   .from("credentials")
-  .select("type,title_es,title_en,issuer,issued_date,description_es,description_en,image_url,credential_url,tags")
+  .select("type,title_es,title_en,issuer,issued_date,description_es,description_en,image_url,credential_url,tags,sort_order")
   .eq("published", true)
   .order("sort_order", { ascending: true })
   .order("issued_date", { ascending: false });
@@ -42,15 +44,10 @@ const courses = ((data ?? []) as Credential[])
     provider: { es: c.issuer, en: c.issuer },
     date: c.issued_date ?? undefined,
     skills: c.tags ?? [],
-    image: c.image_url ?? "",
-    link: c.credential_url ?? "",
-  }))
-  .slice()
-  .sort((a, b) => {
-    const da = a.date ? new Date(a.date).getTime() : 0;
-    const db = b.date ? new Date(b.date).getTime() : 0;
-    return db - da;
-  });
+    image: safeHttpUrl(c.image_url),
+    link: safeHttpUrl(c.credential_url),
+    sortOrder: c.sort_order,
+  }));
 
 function groupByType(items: Course[], lang: Lang) {
   const map = new Map<string, Course[]>();

@@ -1,9 +1,17 @@
 ---
-const { id, title } = Astro.props;
+const { id, title, closeLabel = "Close dialog" } = Astro.props as {
+  id: string;
+  title: string;
+  closeLabel?: string;
+};
+
+const titleId = `${id}-title`;
 ---
 
 <dialog
   id={id}
+  aria-labelledby={titleId}
+  aria-modal="true"
   class="backdrop:bg-black/50 backdrop:backdrop-blur-sm
          fixed inset-0 m-auto w-[92%] max-w-3xl
          rounded-2xl border border-slate-200 bg-white p-0
@@ -12,10 +20,13 @@ const { id, title } = Astro.props;
 >
   <div class="flex flex-col">
     <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-800">
-      <h3 class="text-base font-semibold">{title}</h3>
+      <h3 id={titleId} class="text-base font-semibold">{title}</h3>
 
       <button
+        type="button"
         onclick="this.closest('dialog').close()"
+        aria-label={closeLabel}
+        title={closeLabel}
         class="rounded-lg px-3 py-1 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
       >
         &times;

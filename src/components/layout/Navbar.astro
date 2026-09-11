@@ -30,6 +30,8 @@ const labels = {
                dark:border-slate-800 dark:bg-slate-950/70 dark:hover:bg-slate-950
                md:hidden"
         aria-label={labels.openMenu}
+        aria-controls="nav-menu"
+        aria-expanded="false"
         title={labels.menu}
         onclick="window.toggleMenu && window.toggleMenu()"
       >
@@ -218,7 +220,7 @@ const labels = {
             });
 
             try {
-              const response = await fetch("/api/language", {
+              await fetch("/api/language", {
                 method: "POST",
                 credentials: "same-origin",
                 headers: {
@@ -226,26 +228,18 @@ const labels = {
                 },
                 body: new URLSearchParams({ lang: next }),
               });
-
-              if (!response.ok) throw new Error("Language preference could not be saved.");
-
-              current = next;
-              updateLanguageToggle(next);
-              location.reload();
-            } catch (error) {
-              console.error(error);
-              toggle.removeAttribute("aria-busy");
-              buttons.forEach((button) => {
-                button.disabled = false;
-              });
+            } finally {
+              location.href = "/";
             }
           });
         });
       })();
       window.toggleMenu = function () {
         const menu = document.getElementById("nav-menu");
-        if (!menu) return;
+        const button = document.getElementById("menu-btn");
+        if (!menu || !button) return;
         menu.classList.toggle("hidden");
+        button.setAttribute("aria-expanded", String(!menu.classList.contains("hidden")));
       };
 
       document.addEventListener("click", (e) => {
@@ -256,13 +250,17 @@ const labels = {
         const clickedBtn = btn.contains(e.target);
         const clickedMenu = menu.contains(e.target);
 
-        if (!clickedBtn && !clickedMenu) menu.classList.add("hidden");
+        if (!clickedBtn && !clickedMenu) {
+          menu.classList.add("hidden");
+          btn.setAttribute("aria-expanded", "false");
+        }
       });
 
       document.getElementById("nav-menu")?.addEventListener("click", (e) => {
         const a = e.target?.closest?.("a");
         if (!a) return;
         document.getElementById("nav-menu")?.classList.add("hidden");
+        document.getElementById("menu-btn")?.setAttribute("aria-expanded", "false");
       });
 
       window.updateThemeToggle = function () {

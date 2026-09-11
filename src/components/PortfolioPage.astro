@@ -1,0 +1,25 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "./sections/Hero.astro";
+import ProjectsSection from "./sections/ProjectsSection.astro";
+import CoursesSection from "./sections/CoursesSection.astro";
+import ContactSection from "./sections/ContactSection.astro";
+
+type Lang = "es" | "en";
+
+const { lang } = Astro.props as { lang: Lang };
+
+const title = lang === "es"
+  ? "Christopher | Desarrollador de Software Full Stack"
+  : "Christopher | Full Stack Software Developer";
+const description = lang === "es"
+  ? "Portafolio de Christopher, desarrollador de software Full Stack especializado en aplicaciones web y móviles escalables, modernas y fáciles de mantener."
+  : "Christopher's portfolio: a Full Stack Software Developer building scalable, modern, and maintainable web and mobile applications.";
+---
+
+<BaseLayout title={title} description={description} lang={lang}>
+  <Hero lang={lang} />
+  <ProjectsSection lang={lang} />
+  <CoursesSection lang={lang} />
+  <ContactSection lang={lang} />
+</BaseLayout>

@@ -40,12 +40,12 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
     <button class="rounded-lg bg-slate-900 px-4 py-2 text-white dark:bg-white dark:text-slate-900" type="submit">Guardar</button>
     <a class="rounded-lg border border-slate-200 px-4 py-2 dark:border-slate-800" href="/admin/projects">Cancelar</a>
   </div>
-  <p id="project-message" class="text-sm"></p>
+  <p id="project-message" class="text-sm" role="status" aria-live="polite" aria-atomic="true"></p>
 </form>
 
 <script>
   import { supabase } from "../../../lib/supabase";
-  import { bindFileName, checkedValue, inputValue, parseList, showMessage, slugify, uploadImage } from "../../../lib/admin";
+  import { bindFileName, checkedValue, inputValue, parseList, setFormSubmitting, showMessage, slugify, uploadImage } from "../../../lib/admin";
 
   bindFileName("image_file", "image_file_name");
 
@@ -55,8 +55,10 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
     if (slug && !slug.value) slug.value = slugify(title.value);
   });
 
-  document.getElementById("project-form")?.addEventListener("submit", async (event) => {
+  const form = document.getElementById("project-form") as HTMLFormElement | null;
+  form?.addEventListener("submit", async (event) => {
     event.preventDefault();
+    setFormSubmitting(form, true);
     showMessage("project-message", "Guardando...");
     try {
       const uploadedUrl = await uploadImage("image_file", "projects");
@@ -79,6 +81,8 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
       location.href = "/admin/projects";
     } catch (error) {
       showMessage("project-message", error instanceof Error ? error.message : "Error guardando proyecto.", "error");
+    } finally {
+      setFormSubmitting(form, false);
     }
   });
 </script>

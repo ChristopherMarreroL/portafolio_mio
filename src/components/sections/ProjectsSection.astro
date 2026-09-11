@@ -1,6 +1,7 @@
 ---
 import ProjectCard from "../ProjectCard.astro";
 import { supabase } from "../../lib/supabase";
+import { safeHttpUrl } from "../../lib/urls";
 import type { Project as DbProject } from "../../types/content";
 
 type Lang = "es" | "en";
@@ -22,8 +23,9 @@ const sectionTitle = lang === "es" ? "Proyectos" : "Projects";
 
 const { data, error } = await supabase
   .from("projects")
-  .select("title_es,title_en,description_es,description_en,image_url,project_url,github_url,tools")
+  .select("title_es,title_en,description_es,description_en,image_url,project_url,github_url,tools,featured")
   .eq("published", true)
+  .order("featured", { ascending: false })
   .order("sort_order", { ascending: true })
   .order("created_at", { ascending: false });
 
@@ -31,9 +33,9 @@ const projects = ((data ?? []) as DbProject[]).map((p) => ({
   title: { es: p.title_es, en: p.title_en || p.title_es },
   description: { es: p.description_es, en: p.description_en || p.description_es },
   tech: p.tools ?? [],
-  link: p.project_url ?? "",
-  github: p.github_url ?? "",
-  image: p.image_url ?? "",
+  link: safeHttpUrl(p.project_url),
+  github: safeHttpUrl(p.github_url),
+  image: safeHttpUrl(p.image_url),
   gallery: [],
 })) satisfies Project[];
 ---

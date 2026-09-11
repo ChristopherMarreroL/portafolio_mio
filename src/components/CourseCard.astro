@@ -97,7 +97,11 @@ const modalId = `cert-${course.title.en.replace(/[^a-z0-9]+/gi, "-").toLowerCase
           &#128065;
         </button>
 
-        <Modal id={modalId} title={titleText}>
+        <Modal
+          id={modalId}
+          title={titleText}
+          closeLabel={lang === "es" ? "Cerrar dialogo" : "Close dialog"}
+        >
           <div class="space-y-4">
             <p class="text-sm text-slate-500 dark:text-slate-400">
               {providerText}{course.date ? ` - ${course.date}` : ""}

@@ -1,9 +1,5 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Hero from "../components/sections/Hero.astro";
-import ProjectsSection from "../components/sections/ProjectsSection.astro";
-import CoursesSection from "../components/sections/CoursesSection.astro";
-import ContactSection from "../components/sections/ContactSection.astro";
+import PortfolioPage from "../components/PortfolioPage.astro";
 
 type Lang = "es" | "en";
 
@@ -20,13 +16,6 @@ const detectedLanguage: Lang = primaryLanguage?.startsWith("es") ? "es" : "en";
 const lang: Lang = savedLanguage === "es" || savedLanguage === "en"
   ? savedLanguage
   : detectedLanguage;
-
-const title = lang === "es" ? "Christopher | Portafolio" : "Christopher | Portfolio";
 ---
 
-<BaseLayout title={title} lang={lang}>
-  <Hero lang={lang} />
-  <ProjectsSection lang={lang} />
-  <CoursesSection lang={lang} />
-  <ContactSection lang={lang} />
-</BaseLayout>
+<PortfolioPage lang={lang} />

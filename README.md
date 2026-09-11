@@ -33,13 +33,17 @@ Tambien existen ejemplos en `.env.example` y `sample/.env.example`.
 - El SQL crea las tablas `projects` y `credentials`.
 - El SQL activa Row Level Security en ambas tablas.
 - El SQL crea politicas para lectura publica solo de registros `published = true`.
-- El SQL crea politicas para que usuarios autenticados puedan administrar todo el contenido.
+- El SQL crea una allowlist `portfolio_admins` y limita la administracion a esos usuarios.
 - El SQL crea o actualiza el bucket publico `portfolio-media`.
-- Las politicas de Storage permiten lectura publica y escritura solo a usuarios autenticados.
+- Las politicas de Storage permiten lectura publica y escritura solo a administradores autorizados.
+- El bucket limita las cargas a imagenes PNG, JPEG o WEBP de hasta 5 MB.
 
 ## Usuario Administrador
 - Ve a Supabase Auth.
 - Crea un usuario con email y password.
+- Ejecuta `supabase/schema.sql` despues de crear el usuario. Si existe exactamente un usuario, el script lo agrega automaticamente a `public.portfolio_admins`.
+- Si existen varios usuarios, agrega expresamente el UUID correcto desde SQL con `insert into public.portfolio_admins (user_id) values ('UUID_DEL_ADMIN');`.
+- Confirma la configuracion con `select * from public.portfolio_admins;` antes de desplegar el frontend actualizado.
 - Usa ese usuario para entrar al panel en `/admin/login`.
 
 ## Panel Administrativo
