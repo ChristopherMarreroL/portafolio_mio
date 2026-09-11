@@ -49,12 +49,12 @@ const { id } = Astro.params;
       <button class="rounded-lg bg-slate-900 px-4 py-2 text-white dark:bg-white dark:text-slate-900" type="submit">Guardar cambios</button>
       <a class="rounded-lg border border-slate-200 px-4 py-2 dark:border-slate-800" href="/admin/projects">Cancelar</a>
     </div>
-    <p id="project-message" class="text-sm">Cargando proyecto...</p>
+    <p id="project-message" class="text-sm" role="status" aria-live="polite" aria-atomic="true">Cargando proyecto...</p>
   </form>
 
   <script>
     import { supabase } from "../../../../lib/supabase";
-    import { bindFileName, checkedValue, inputValue, listToInput, parseList, setChecked, setValue, showMessage, uploadImage } from "../../../../lib/admin";
+    import { bindFileName, checkedValue, inputValue, listToInput, parseList, setChecked, setFormSubmitting, setValue, showMessage, uploadImage } from "../../../../lib/admin";
     import type { Project } from "../../../../types/content";
 
     const form = document.getElementById("project-form") as HTMLFormElement | null;
@@ -88,6 +88,7 @@ const { id } = Astro.params;
 
     form?.addEventListener("submit", async (event) => {
       event.preventDefault();
+      setFormSubmitting(form, true);
       showMessage("project-message", "Guardando...");
       try {
         const uploadedUrl = await uploadImage("image_file", "projects");
@@ -110,6 +111,8 @@ const { id } = Astro.params;
         location.href = "/admin/projects";
       } catch (error) {
         showMessage("project-message", error instanceof Error ? error.message : "Error guardando cambios.", "error");
+      } finally {
+        setFormSubmitting(form, false);
       }
     });
 

@@ -11,6 +11,7 @@ const { title = "Admin", protect = true } = Astro.props as { title?: string; pro
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
     <title>{title}</title>
     <link rel="icon" type="image/webp" href="/logo.webp" />
   </head>
@@ -53,6 +54,16 @@ const { title = "Admin", protect = true } = Astro.props as { title?: string; pro
       const { data } = await supabase.auth.getSession();
       const isLogin = location.pathname === "/admin/login";
       let hasSession = Boolean(data.session);
+      let isAdmin = false;
+
+      if (hasSession) {
+        const { data: adminResult, error: adminError } = await supabase.rpc("is_portfolio_admin");
+        isAdmin = !adminError && adminResult === true;
+        if (!isAdmin) {
+          await supabase.auth.signOut();
+          hasSession = false;
+        }
+      }
 
       async function signOutToLogin(expired = false) {
         sessionStorage.removeItem(activityKey);
@@ -90,9 +101,9 @@ const { title = "Admin", protect = true } = Astro.props as { title?: string; pro
         hasSession = false;
       }
 
-      if (protect && !hasSession) location.href = "/admin/login";
-      if (isLogin && hasSession) location.href = "/admin/dashboard";
-      if (hasSession) {
+      if (protect && (!hasSession || !isAdmin)) location.href = "/admin/login";
+      if (isLogin && hasSession && isAdmin) location.href = "/admin/dashboard";
+      if (hasSession && isAdmin) {
         main?.classList.remove("hidden");
         nav?.classList.remove("hidden");
         nav?.classList.add("flex");

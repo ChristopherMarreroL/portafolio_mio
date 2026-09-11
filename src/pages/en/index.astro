@@ -3,6 +3,7 @@ Astro.cookies.set("lang", "en", {
   path: "/",
   maxAge: 60 * 60 * 24 * 365,
   sameSite: "lax",
+  secure: import.meta.env.PROD,
 });
 
 return Astro.redirect("/", 302);

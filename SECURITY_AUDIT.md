@@ -10,7 +10,7 @@ No hardcoded private secrets, service role keys, database URLs, JWT secrets, Git
 
 The project uses `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_KEY` in the browser. This is expected for Supabase client usage as long as `PUBLIC_SUPABASE_KEY` is the anon/public key and Row Level Security remains enabled.
 
-Admin data mutations depend on authenticated Supabase sessions and RLS policies. Public portfolio queries are restricted to `published = true` and were tightened to request only the fields required by the UI.
+Admin data mutations require both an authenticated Supabase session and membership in the `portfolio_admins` allowlist. Public portfolio queries are restricted to `published = true`.
 
 ## Files Reviewed
 
@@ -99,7 +99,7 @@ No `service_role` key or private Supabase key usage was found in frontend code.
 
 Public visitors can only read rows where `published = true`.
 
-Authenticated users can read, create, update, and delete content. This is acceptable for the current setup only if Supabase Auth registration remains disabled and only the manually created admin user exists.
+Only authenticated users present in `public.portfolio_admins` can read drafts or create, update, and delete content. The same allowlist protects Storage writes.
 
 ### Public Data Minimization
 
@@ -143,6 +143,11 @@ Full Network tab behavior requires manual verification in the browser after depl
 - Hardened `src/layouts/AdminLayout.astro` so protected admin content is hidden until a valid Supabase session is confirmed.
 - Reduced public Supabase selects in `src/components/sections/ProjectsSection.astro` to only required fields.
 - Reduced public Supabase selects in `src/components/sections/CoursesSection.astro` to only required fields.
+- Added an explicit administrator allowlist and applied it to database and Storage mutations.
+- Removed stored-XSS sinks from the administrative lists by rendering database values with DOM `textContent`.
+- Restricted saved links to HTTP/HTTPS and added defensive sanitization for historical public data.
+- Limited uploaded images to verified PNG, JPEG, or WEBP files of at most 5 MB.
+- Added CSP, anti-framing, MIME-sniffing, referrer, permissions, and private admin-cache headers.
 - Added this audit report in `SECURITY_AUDIT.md`.
 
 ## Verification Commands
@@ -164,7 +169,7 @@ Build completed successfully.
 ## Remaining Risks
 
 - Admin route protection is primarily client-side because Supabase Auth is currently used through the browser client. RLS protects the data layer, but for strict server-side route protection, migrate auth session handling to secure cookies and Astro middleware.
-- RLS policies allow any authenticated user to administer content. This is acceptable only while public signup stays disabled and only the admin user exists. If more users are added, introduce role-based authorization or an allowlist table.
+- Applying the frontend before `supabase/schema.sql` will reject admin logins because the required `is_portfolio_admin` RPC will not exist yet.
 - Supabase browser sessions are accessible to JavaScript by design in the current setup. Continue avoiding third-party scripts in admin pages and keep dependencies reviewed.
 
 ## Recommendations
