@@ -26,6 +26,7 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
       <div class="mt-1 flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950">
         <label for="image_file" class="cursor-pointer rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:opacity-90 dark:bg-white dark:text-slate-900">Elegir archivo</label>
         <span id="image_file_name" class="text-sm text-slate-500 dark:text-slate-400">Ningun archivo seleccionado</span>
+        <button id="clear-image-file" type="button" class="rounded-lg border border-slate-200 px-3 py-2 text-xs dark:border-slate-700">Quitar selección</button>
         <input id="image_file" type="file" accept="image/*" class="sr-only" />
       </div>
     </div>
@@ -45,9 +46,10 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
 
 <script>
   import { supabase } from "../../../lib/supabase";
-  import { bindFileName, checkedValue, inputValue, parseList, setFormSubmitting, showMessage, slugify, uploadImage } from "../../../lib/admin";
+  import { bindFileName, checkedValue, clearFileInput, inputValue, parseList, removeStoredImage, setFormSubmitting, showMessage, slugify, uploadImage } from "../../../lib/admin";
 
   bindFileName("image_file", "image_file_name");
+  document.getElementById("clear-image-file")?.addEventListener("click", () => clearFileInput("image_file", "image_file_name"));
 
   const title = document.getElementById("title_es") as HTMLInputElement | null;
   const slug = document.getElementById("slug") as HTMLInputElement | null;
@@ -60,8 +62,9 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
     event.preventDefault();
     setFormSubmitting(form, true);
     showMessage("project-message", "Guardando...");
+    let uploadedUrl: string | null = null;
     try {
-      const uploadedUrl = await uploadImage("image_file", "projects");
+      uploadedUrl = await uploadImage("image_file", "projects");
       const { error } = await supabase.from("projects").insert({
         title_es: inputValue("title_es"),
         title_en: inputValue("title_en") || null,
@@ -80,6 +83,7 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
       showMessage("project-message", "Proyecto guardado.", "success");
       location.href = "/admin/projects";
     } catch (error) {
+      if (uploadedUrl) await removeStoredImage(uploadedUrl).catch(() => undefined);
       showMessage("project-message", error instanceof Error ? error.message : "Error guardando proyecto.", "error");
     } finally {
       setFormSubmitting(form, false);

@@ -1,0 +1,10 @@
+---
+import NewsForm from "../../../../components/admin/NewsForm.astro";
+import AdminLayout from "../../../../layouts/AdminLayout.astro";
+
+const { id = "" } = Astro.params;
+---
+
+<AdminLayout title="Editar Artículo">
+  <NewsForm mode="edit" id={id} />
+</AdminLayout>

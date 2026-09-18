@@ -39,6 +39,33 @@ create table if not exists public.credentials (
   updated_at timestamp with time zone default now()
 );
 
+create table if not exists public.news_posts (
+  id uuid primary key default gen_random_uuid(),
+  slug text unique not null,
+  title_es text not null,
+  title_en text,
+  excerpt_es text not null,
+  excerpt_en text,
+  content_es text not null,
+  content_en text,
+  app_name text not null,
+  image_url text,
+  image_urls text[] default '{}',
+  app_url text,
+  tags text[] default '{}',
+  featured boolean default false,
+  published boolean default false,
+  published_at timestamp with time zone,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now()
+);
+
+-- Backwards-compatible migration for installations that already created news_posts.
+alter table public.news_posts add column if not exists image_urls text[] default '{}';
+update public.news_posts
+set image_urls = array[image_url]
+where image_url is not null and coalesce(cardinality(image_urls), 0) = 0;
+
 -- Explicit allowlist for portfolio administrators. Authentication alone must not
 -- grant access to the administrative data or media operations.
 create table if not exists public.portfolio_admins (
@@ -48,25 +75,6 @@ create table if not exists public.portfolio_admins (
 
 alter table public.portfolio_admins enable row level security;
 revoke all on public.portfolio_admins from anon, authenticated;
-
--- On the first migration only, preserve access when the Supabase project has
--- exactly one user. With zero or multiple users the migration intentionally
--- grants nobody and an administrator must be inserted explicitly in SQL.
-do $$
-declare
-  only_user_id uuid;
-begin
-  if not exists (select 1 from public.portfolio_admins) then
-    if (select count(*) from auth.users) = 1 then
-      select id into only_user_id from auth.users limit 1;
-      insert into public.portfolio_admins (user_id) values (only_user_id)
-      on conflict (user_id) do nothing;
-    else
-      raise notice 'Portfolio admin bootstrap skipped: expected exactly one auth user.';
-    end if;
-  end if;
-end;
-$$;
 
 create or replace function public.is_portfolio_admin()
 returns boolean
@@ -103,6 +111,15 @@ alter table public.credentials add constraint credentials_image_url_http
 alter table public.credentials drop constraint if exists credentials_credential_url_http;
 alter table public.credentials add constraint credentials_credential_url_http
   check (credential_url is null or credential_url ~* '^https?://') not valid;
+alter table public.news_posts drop constraint if exists news_posts_image_url_http;
+alter table public.news_posts add constraint news_posts_image_url_http
+  check (image_url is null or image_url ~* '^https?://') not valid;
+alter table public.news_posts drop constraint if exists news_posts_max_three_images;
+alter table public.news_posts add constraint news_posts_max_three_images
+  check (coalesce(cardinality(image_urls), 0) <= 3) not valid;
+alter table public.news_posts drop constraint if exists news_posts_app_url_http;
+alter table public.news_posts add constraint news_posts_app_url_http
+  check (app_url is null or app_url ~* '^https?://') not valid;
 
 create or replace function public.set_updated_at()
 returns trigger as $$
@@ -122,8 +139,14 @@ create trigger set_credentials_updated_at
 before update on public.credentials
 for each row execute function public.set_updated_at();
 
+drop trigger if exists set_news_posts_updated_at on public.news_posts;
+create trigger set_news_posts_updated_at
+before update on public.news_posts
+for each row execute function public.set_updated_at();
+
 alter table public.projects enable row level security;
 alter table public.credentials enable row level security;
+alter table public.news_posts enable row level security;
 
 -- Public visitors can only read projects that are explicitly published.
 drop policy if exists "Public can read published projects" on public.projects;
@@ -198,6 +221,38 @@ on public.credentials for delete
 to authenticated
 using ((select public.is_portfolio_admin()));
 
+-- Public visitors only see published news. Administrators manage the full archive.
+drop policy if exists "Public can read published news" on public.news_posts;
+create policy "Public can read published news"
+on public.news_posts for select
+to anon
+using (published = true and published_at is not null and published_at <= now());
+
+drop policy if exists "Portfolio admins can read all news" on public.news_posts;
+create policy "Portfolio admins can read all news"
+on public.news_posts for select
+to authenticated
+using ((select public.is_portfolio_admin()));
+
+drop policy if exists "Portfolio admins can create news" on public.news_posts;
+create policy "Portfolio admins can create news"
+on public.news_posts for insert
+to authenticated
+with check ((select public.is_portfolio_admin()));
+
+drop policy if exists "Portfolio admins can update news" on public.news_posts;
+create policy "Portfolio admins can update news"
+on public.news_posts for update
+to authenticated
+using ((select public.is_portfolio_admin()))
+with check ((select public.is_portfolio_admin()));
+
+drop policy if exists "Portfolio admins can delete news" on public.news_posts;
+create policy "Portfolio admins can delete news"
+on public.news_posts for delete
+to authenticated
+using ((select public.is_portfolio_admin()));
+
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'portfolio-media',
@@ -211,12 +266,17 @@ on conflict (id) do update set
   file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;
 
--- Anyone can read files from the public portfolio-media bucket.
+-- Public asset URLs remain downloadable because the bucket is public, but only
+-- administrators may list its object metadata through the Storage API.
 drop policy if exists "Public can read portfolio media" on storage.objects;
-create policy "Public can read portfolio media"
+drop policy if exists "Portfolio admins can read portfolio media metadata" on storage.objects;
+create policy "Portfolio admins can read portfolio media metadata"
 on storage.objects for select
-to anon, authenticated
-using (bucket_id = 'portfolio-media');
+to authenticated
+using (
+  bucket_id = 'portfolio-media'
+  and (select public.is_portfolio_admin())
+);
 
 drop policy if exists "Authenticated can upload portfolio media" on storage.objects;
 drop policy if exists "Portfolio admins can upload portfolio media" on storage.objects;
@@ -261,7 +321,9 @@ grant usage on schema public to anon, authenticated;
 -- RLS seguirá limitando que solo vean published = true.
 grant select on public.projects to anon;
 grant select on public.credentials to anon;
+grant select on public.news_posts to anon;
 
 -- Permisos para usuarios autenticados del panel admin.
 grant select, insert, update, delete on public.projects to authenticated;
 grant select, insert, update, delete on public.credentials to authenticated;
+grant select, insert, update, delete on public.news_posts to authenticated;

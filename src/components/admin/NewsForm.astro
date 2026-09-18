@@ -1,0 +1,215 @@
+---
+const { mode, id = "" } = Astro.props as { mode: "new" | "edit"; id?: string };
+const editing = mode === "edit";
+---
+
+<div class="flex flex-wrap items-end justify-between gap-4">
+  <div>
+    <h1 class="text-3xl font-semibold tracking-tight">{editing ? "Editar artículo" : "Nuevo artículo"}</h1>
+    <p class="mt-2 text-slate-500 dark:text-slate-400">Publica una guía bilingüe y enlázala con la app, sitio web o herramienta protagonista.</p>
+  </div>
+  <a class="rounded-lg border border-slate-200 px-4 py-2 dark:border-slate-800" href="/admin/news">Volver</a>
+</div>
+
+<form id="news-form" data-mode={mode} data-id={id} class="mt-6 grid gap-5 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
+  <div class="grid gap-4 md:grid-cols-2">
+    <label class="text-sm">Título ES<input id="title_es" required maxlength="120" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" /></label>
+    <label class="text-sm">Título EN<input id="title_en" maxlength="120" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" /></label>
+  </div>
+  <div class="grid gap-4 md:grid-cols-2">
+    <label class="text-sm">Slug<input id="slug" required pattern="[a-z0-9]+(?:-[a-z0-9]+)*" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" /></label>
+    <label class="text-sm">Nombre de la app<input id="app_name" required maxlength="80" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" /></label>
+  </div>
+  <div class="grid gap-4 md:grid-cols-2">
+    <label class="text-sm">Resumen ES <span class="text-slate-400">(ideal: 140–160 caracteres)</span><textarea id="excerpt_es" required maxlength="200" rows="4" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950"></textarea></label>
+    <label class="text-sm">Resumen EN<textarea id="excerpt_en" maxlength="200" rows="4" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950"></textarea></label>
+  </div>
+  <div class="grid gap-4 md:grid-cols-2">
+    <label class="text-sm">Contenido ES <span class="text-slate-400">(separa párrafos con una línea vacía)</span><textarea id="content_es" required rows="12" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 leading-6 dark:border-slate-800 dark:bg-slate-950"></textarea></label>
+    <label class="text-sm">Contenido EN<textarea id="content_en" rows="12" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 leading-6 dark:border-slate-800 dark:bg-slate-950"></textarea></label>
+  </div>
+  <label class="text-sm">Temas o menciones, separados por coma<input id="tags" placeholder="código QR, productividad, web app" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" /></label>
+  <div class="grid gap-4 md:grid-cols-2">
+    <label class="text-sm">URL de la app<input id="app_url" type="url" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" /></label>
+    <label class="text-sm">URL externa de imagen <span class="text-slate-400">(opcional)</span><input id="image_url" type="url" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" /></label>
+  </div>
+  <div class="text-sm">
+    <span>Imágenes <span class="text-slate-400">(máximo 3; la primera será la portada)</span></span>
+    <div class="mt-1 flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 px-3 py-2 dark:border-slate-800">
+      <label for="image_file" class="cursor-pointer rounded-lg bg-slate-900 px-3 py-2 font-medium text-white dark:bg-white dark:text-slate-900">Elegir imágenes</label>
+      <span id="image_file_name" class="text-slate-500 dark:text-slate-400">Ningún archivo seleccionado</span>
+      <button id="clear-image-files" type="button" class="rounded-lg border border-slate-200 px-3 py-2 text-xs dark:border-slate-700">Quitar selección</button>
+      <input id="image_file" type="file" accept="image/png,image/jpeg,image/webp" multiple class="sr-only" />
+    </div>
+  </div>
+  <div id="existing-images" class="hidden grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-label="Imágenes actuales"></div>
+  <div class="grid gap-4 md:grid-cols-3">
+    <label class="text-sm">Fecha de publicación<input id="published_at" type="date" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 [color-scheme:light] dark:border-slate-800 dark:bg-slate-950 dark:[color-scheme:dark]" /></label>
+    <label class="mt-7 flex items-center gap-2 text-sm"><input id="featured" type="checkbox" /> Destacada</label>
+    <label class="mt-7 flex items-center gap-2 text-sm"><input id="published" type="checkbox" /> Publicada</label>
+  </div>
+  <p class="text-xs text-slate-500 dark:text-slate-400">Abre el calendario para elegir el año, mes y día de publicación.</p>
+  <div class="flex flex-wrap gap-3">
+    <button class="rounded-lg bg-slate-900 px-4 py-2 text-white disabled:opacity-60 dark:bg-white dark:text-slate-900" type="submit">{editing ? "Guardar cambios" : "Guardar artículo"}</button>
+    <a class="rounded-lg border border-slate-200 px-4 py-2 dark:border-slate-800" href="/admin/news">Cancelar</a>
+  </div>
+  <p id="news-message" class="text-sm" role="status" aria-live="polite" aria-atomic="true">{editing ? "Cargando artículo..." : ""}</p>
+</form>
+
+<script>
+  import { supabase } from "../../lib/supabase";
+  import { bindFileName, checkedValue, clearFileInput, inputValue, listToInput, parseList, removeStoredImage, removeStoredImages, setChecked, setFormSubmitting, setValue, showMessage, slugify, uploadImages } from "../../lib/admin";
+  import type { NewsPost } from "../../types/content";
+
+  const form = document.getElementById("news-form") as HTMLFormElement | null;
+  const mode = form?.dataset.mode;
+  const id = form?.dataset.id;
+  const titleInput = document.getElementById("title_es") as HTMLInputElement | null;
+  const slugInput = document.getElementById("slug") as HTMLInputElement | null;
+  const existingImagesContainer = document.getElementById("existing-images");
+  let currentImages: string[] = [];
+  bindFileName("image_file", "image_file_name");
+  document.getElementById("clear-image-files")?.addEventListener("click", () => clearFileInput("image_file", "image_file_name"));
+
+  titleInput?.addEventListener("input", () => {
+    if (mode === "new" && slugInput && !slugInput.dataset.touched) slugInput.value = slugify(titleInput.value);
+  });
+  slugInput?.addEventListener("input", () => { slugInput.dataset.touched = "true"; });
+
+  function toDateInput(value: string | null) {
+    if (!value) return "";
+    const date = new Date(value);
+    const offset = date.getTimezoneOffset();
+    return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 10);
+  }
+
+  function renderCurrentImages() {
+    if (!existingImagesContainer) return;
+    existingImagesContainer.replaceChildren();
+    existingImagesContainer.classList.toggle("hidden", currentImages.length === 0);
+    currentImages.forEach((url, index) => {
+      const card = document.createElement("div");
+      card.className = "overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800";
+      const image = document.createElement("img");
+      image.src = url;
+      image.alt = `Imagen ${index + 1}`;
+      image.className = "aspect-video w-full object-cover";
+      const footer = document.createElement("div");
+      footer.className = "flex items-center justify-between gap-2 p-3";
+      const label = document.createElement("span");
+      label.className = "text-xs text-slate-500 dark:text-slate-400";
+      label.textContent = index === 0 ? "Portada" : `Imagen ${index + 1}`;
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "rounded-lg border border-red-200 px-3 py-1 text-xs text-red-600 dark:border-red-900 dark:text-red-400";
+      removeButton.textContent = "Eliminar imagen";
+      removeButton.addEventListener("click", async () => {
+        if (!confirm("¿Quieres eliminar esta imagen? También se retirará del Storage si fue subida desde el panel.")) return;
+        const previousImages = [...currentImages];
+        const nextImages = currentImages.filter((item) => item !== url);
+        removeButton.disabled = true;
+        try {
+          if (mode === "edit" && id) {
+            const { error } = await supabase.from("news_posts").update({ image_urls: nextImages, image_url: nextImages[0] || null }).eq("id", id);
+            if (error) throw error;
+          }
+          currentImages = nextImages;
+          renderCurrentImages();
+          try {
+            await removeStoredImage(url);
+          } catch (storageError) {
+            if (mode === "edit" && id) {
+              await supabase.from("news_posts").update({ image_urls: previousImages, image_url: previousImages[0] || null }).eq("id", id);
+            }
+            currentImages = previousImages;
+            renderCurrentImages();
+            throw storageError;
+          }
+          showMessage("news-message", "Imagen eliminada.", "success");
+        } catch (error) {
+          showMessage("news-message", error instanceof Error ? error.message : "No se pudo eliminar la imagen.", "error");
+          removeButton.disabled = false;
+        }
+      });
+      footer.append(label, removeButton);
+      card.append(image, footer);
+      existingImagesContainer.append(card);
+    });
+  }
+
+  if (mode === "edit" && id) {
+    const { data, error } = await supabase.from("news_posts").select("*").eq("id", id).single();
+    if (error) {
+      showMessage("news-message", error.message, "error");
+    } else {
+      const post = data as NewsPost;
+      setValue("title_es", post.title_es);
+      setValue("title_en", post.title_en);
+      setValue("slug", post.slug);
+      setValue("app_name", post.app_name);
+      setValue("excerpt_es", post.excerpt_es);
+      setValue("excerpt_en", post.excerpt_en);
+      setValue("content_es", post.content_es);
+      setValue("content_en", post.content_en);
+      setValue("tags", listToInput(post.tags));
+      setValue("app_url", post.app_url);
+      currentImages = (post.image_urls?.length ? post.image_urls : [post.image_url]).filter((url): url is string => Boolean(url)).slice(0, 3);
+      renderCurrentImages();
+      setValue("published_at", toDateInput(post.published_at));
+      setChecked("featured", post.featured);
+      setChecked("published", post.published);
+      showMessage("news-message", "Artículo cargado.");
+    }
+  }
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    setFormSubmitting(form, true);
+    showMessage("news-message", "Guardando...");
+    let uploadedUrls: string[] = [];
+    try {
+      const externalUrl = inputValue("image_url");
+      const baseImages = externalUrl && !currentImages.includes(externalUrl) ? [...currentImages, externalUrl] : [...currentImages];
+      if (baseImages.length > 3) throw new Error("Solo puedes guardar hasta 3 imágenes por artículo.");
+      uploadedUrls = await uploadImages("image_file", "news", 3 - baseImages.length);
+      const finalImages = [...baseImages, ...uploadedUrls];
+      if (finalImages.length > 3) throw new Error("Solo puedes guardar hasta 3 imágenes por artículo.");
+      const published = checkedValue("published");
+      const publicationDate = inputValue("published_at");
+      if (published && !publicationDate) throw new Error("Selecciona la fecha de publicación en el calendario.");
+      const titleEn = inputValue("title_en");
+      const excerptEn = inputValue("excerpt_en");
+      const contentEn = inputValue("content_en");
+      if (published && (!titleEn || !excerptEn || !contentEn)) {
+        throw new Error("Completa el título, resumen y contenido en inglés antes de publicar.");
+      }
+      const payload = {
+        title_es: inputValue("title_es"),
+        title_en: titleEn || null,
+        slug: inputValue("slug") || slugify(inputValue("title_es")),
+        app_name: inputValue("app_name"),
+        excerpt_es: inputValue("excerpt_es"),
+        excerpt_en: excerptEn || null,
+        content_es: inputValue("content_es"),
+        content_en: contentEn || null,
+        tags: parseList(inputValue("tags")),
+        app_url: inputValue("app_url") || null,
+        image_url: finalImages[0] || null,
+        image_urls: finalImages,
+        featured: checkedValue("featured"),
+        published,
+        published_at: publicationDate ? new Date(`${publicationDate}T00:00:00`).toISOString() : null,
+      };
+      const query = mode === "edit" ? supabase.from("news_posts").update(payload).eq("id", id) : supabase.from("news_posts").insert(payload);
+      const { error } = await query;
+      if (error) throw error;
+      showMessage("news-message", "Artículo guardado.", "success");
+      location.href = "/admin/news";
+    } catch (error) {
+      if (uploadedUrls.length > 0) await removeStoredImages(uploadedUrls).catch(() => undefined);
+      showMessage("news-message", error instanceof Error ? error.message : "Error guardando el artículo.", "error");
+    } finally {
+      setFormSubmitting(form, false);
+    }
+  });
+</script>

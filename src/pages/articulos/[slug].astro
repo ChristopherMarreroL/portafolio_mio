@@ -1,0 +1,10 @@
+---
+import NewsArticlePage from "../../components/NewsArticlePage.astro";
+import { getPublishedNewsPost } from "../../lib/news";
+
+const { slug = "" } = Astro.params;
+const { post, unavailable } = await getPublishedNewsPost(slug, "es");
+Astro.response.status = unavailable ? 503 : post ? 200 : 404;
+---
+
+<NewsArticlePage lang="es" slug={slug} post={post} unavailable={unavailable} />

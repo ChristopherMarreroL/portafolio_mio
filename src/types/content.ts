@@ -37,3 +37,24 @@ export type Credential = {
   created_at: string;
   updated_at: string;
 };
+
+export type NewsPost = {
+  id: string;
+  slug: string;
+  title_es: string;
+  title_en: string | null;
+  excerpt_es: string;
+  excerpt_en: string | null;
+  content_es: string;
+  content_en: string | null;
+  app_name: string;
+  image_url: string | null;
+  image_urls: string[] | null;
+  app_url: string | null;
+  tags: string[] | null;
+  featured: boolean;
+  published: boolean;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+};

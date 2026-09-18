@@ -6,6 +6,7 @@ const homeHref = "/";
 
 const labels = {
   projects: lang === "es" ? "Proyectos" : "Projects",
+  news: lang === "es" ? "Artículos" : "Articles",
   courses: lang === "es" ? "Cursos" : "Courses",
   contact: lang === "es" ? "Contacto" : "Contact",
   menu: "Menu",
@@ -49,7 +50,7 @@ const labels = {
                dark:border-slate-800 dark:bg-slate-950/50"
       >
         <a
-          href="#projects"
+          href="/#projects"
           class="rounded-full px-4 py-2 text-sm
                  text-slate-700 transition hover:bg-slate-100 hover:text-slate-900
                  dark:text-slate-200 dark:hover:bg-slate-900 dark:hover:text-white"
@@ -58,7 +59,16 @@ const labels = {
         </a>
 
         <a
-          href="#courses"
+          href={lang === "es" ? "/articulos" : "/articles"}
+          class="rounded-full px-4 py-2 text-sm
+                 text-slate-700 transition hover:bg-slate-100 hover:text-slate-900
+                 dark:text-slate-200 dark:hover:bg-slate-900 dark:hover:text-white"
+        >
+          {labels.news}
+        </a>
+
+        <a
+          href="/#courses"
           class="rounded-full px-4 py-2 text-sm
                  text-slate-700 transition hover:bg-slate-100 hover:text-slate-900
                  dark:text-slate-200 dark:hover:bg-slate-900 dark:hover:text-white"
@@ -67,7 +77,7 @@ const labels = {
         </a>
 
         <a
-          href="#contact"
+          href="/#contact"
           class="rounded-full px-4 py-2 text-sm
                  text-slate-700 transition hover:bg-slate-100 hover:text-slate-900
                  dark:text-slate-200 dark:hover:bg-slate-900 dark:hover:text-white"
@@ -83,13 +93,16 @@ const labels = {
                dark:border-slate-800 dark:bg-slate-950/90
                md:hidden"
       >
-        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900" href="#projects">
+        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900" href="/#projects">
           {labels.projects}
         </a>
-        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900" href="#courses">
+        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900" href={lang === "es" ? "/articulos" : "/articles"}>
+          {labels.news}
+        </a>
+        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900" href="/#courses">
           {labels.courses}
         </a>
-        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900" href="#contact">
+        <a class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-900" href="/#contact">
           {labels.contact}
         </a>
 
@@ -229,7 +242,14 @@ const labels = {
                 body: new URLSearchParams({ lang: next }),
               });
             } finally {
-              location.href = "/";
+              const path = location.pathname;
+              if (path === "/articulos" || path.startsWith("/articulos/")) {
+                location.href = path.replace(/^\/articulos/, "/articles");
+              } else if (path === "/articles" || path.startsWith("/articles/")) {
+                location.href = path.replace(/^\/articles/, "/articulos");
+              } else {
+                location.href = "/";
+              }
             }
           });
         });

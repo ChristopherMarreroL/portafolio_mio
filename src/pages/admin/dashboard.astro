@@ -12,7 +12,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 
   <div id="dashboard-status" class="mt-6 text-sm text-slate-500 dark:text-slate-400">Cargando resumen...</div>
 
-  <section class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+  <section class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
     <article class="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
       <p class="text-sm text-slate-500 dark:text-slate-400">Proyectos</p>
       <strong id="total-projects" class="mt-2 block text-3xl">0</strong>
@@ -20,6 +20,10 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     <article class="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
       <p class="text-sm text-slate-500 dark:text-slate-400">Formacion</p>
       <strong id="total-credentials" class="mt-2 block text-3xl">0</strong>
+    </article>
+    <article class="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
+      <p class="text-sm text-slate-500 dark:text-slate-400">Artículos</p>
+      <strong id="total-news" class="mt-2 block text-3xl">0</strong>
     </article>
     <article class="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950">
       <p class="text-sm text-slate-500 dark:text-slate-400">Publicados</p>
@@ -34,6 +38,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
   <div class="mt-8 flex flex-wrap gap-3">
     <a class="rounded-lg bg-slate-900 px-4 py-2 text-white dark:bg-white dark:text-slate-900" href="/admin/projects/new">Nuevo proyecto</a>
     <a class="rounded-lg border border-slate-200 px-4 py-2 dark:border-slate-800" href="/admin/credentials/new">Nueva formacion</a>
+    <a class="rounded-lg border border-slate-200 px-4 py-2 dark:border-slate-800" href="/admin/news/new">Nuevo artículo</a>
   </div>
 
   <script>
@@ -45,22 +50,25 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       if (el) el.textContent = String(value);
     };
 
-    const [{ data: projects, error: projectsError }, { data: credentials, error: credentialsError }] = await Promise.all([
+    const [{ data: projects, error: projectsError }, { data: credentials, error: credentialsError }, { data: news, error: newsError }] = await Promise.all([
       supabase.from("projects").select("id,published"),
       supabase.from("credentials").select("id,published"),
+      supabase.from("news_posts").select("id,published"),
     ]);
 
-    if (projectsError || credentialsError) {
+    if (projectsError || credentialsError || newsError) {
       if (status) {
-        status.textContent = projectsError?.message || credentialsError?.message || "Error cargando datos.";
+        status.textContent = projectsError?.message || credentialsError?.message || newsError?.message || "Error cargando datos.";
         status.className = "mt-6 text-sm text-red-500";
       }
     } else {
       const projectRows = projects ?? [];
       const credentialRows = credentials ?? [];
-      const allRows = [...projectRows, ...credentialRows];
+      const newsRows = news ?? [];
+      const allRows = [...projectRows, ...credentialRows, ...newsRows];
       setText("total-projects", projectRows.length);
       setText("total-credentials", credentialRows.length);
+      setText("total-news", newsRows.length);
       setText("total-published", allRows.filter((item) => item.published).length);
       setText("total-unpublished", allRows.filter((item) => !item.published).length);
       if (status) status.textContent = "Resumen actualizado.";

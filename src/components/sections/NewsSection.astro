@@ -1,0 +1,51 @@
+---
+import { supabase } from "../../lib/supabase";
+import type { Lang, NewsPost } from "../../types/content";
+import NewsCard from "../news/NewsCard.astro";
+
+const { lang = "en" } = Astro.props as { lang?: Lang };
+const now = new Date().toISOString();
+let postsQuery = supabase
+  .from("news_posts")
+  .select("*")
+  .eq("published", true)
+  .lte("published_at", now);
+if (lang === "en") {
+  postsQuery = postsQuery.not("title_en", "is", null).not("excerpt_en", "is", null).not("content_en", "is", null);
+}
+const { data, error } = await postsQuery
+  .order("featured", { ascending: false })
+  .order("published_at", { ascending: false })
+  .limit(3);
+
+const posts = (data ?? []) as NewsPost[];
+const archiveHref = lang === "es" ? "/articulos" : "/articles";
+---
+
+{(posts.length > 0 || error) && (
+  <section id="news" class="py-10">
+    <div class="flex flex-col gap-4 border-b border-slate-200 pb-5 dark:border-slate-800 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="font-mono text-xs uppercase tracking-[0.22em] text-sky-700 dark:text-sky-300">
+          {lang === "es" ? "Guías y herramientas" : "Guides and tools"}
+        </p>
+        <h2 class="mt-2 text-2xl font-semibold tracking-tight">
+          {lang === "es" ? "Artículos" : "Articles"}
+        </h2>
+      </div>
+      <a class="text-sm font-semibold text-slate-700 hover:text-sky-700 dark:text-slate-200 dark:hover:text-sky-300" href={archiveHref}>
+        {lang === "es" ? "Ver todos los artículos →" : "View all articles →"}
+      </a>
+    </div>
+
+    {error ? (
+      <p class="mt-6 text-sm text-red-500">
+        {lang === "es" ? "No se pudieron cargar los artículos." : "Articles could not be loaded."}
+      </p>
+    ) : (
+      <div class="mt-6 grid gap-4 sm:grid-cols-2">
+        {posts.map((post, index) => <NewsCard post={post} lang={lang} featured={index === 0 && post.featured} />)}
+      </div>
+    )}
+  </section>
+)}

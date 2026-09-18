@@ -30,8 +30,8 @@ Tambien existen ejemplos en `.env.example` y `sample/.env.example`.
 - Abre tu proyecto de Supabase.
 - Ve a SQL Editor.
 - Ejecuta el contenido de `supabase/schema.sql`.
-- El SQL crea las tablas `projects` y `credentials`.
-- El SQL activa Row Level Security en ambas tablas.
+- El SQL crea las tablas `projects`, `credentials` y `news_posts`.
+- El SQL activa Row Level Security en las tablas de contenido.
 - El SQL crea politicas para lectura publica solo de registros `published = true`.
 - El SQL crea una allowlist `portfolio_admins` y limita la administracion a esos usuarios.
 - El SQL crea o actualiza el bucket publico `portfolio-media`.
@@ -41,8 +41,9 @@ Tambien existen ejemplos en `.env.example` y `sample/.env.example`.
 ## Usuario Administrador
 - Ve a Supabase Auth.
 - Crea un usuario con email y password.
-- Ejecuta `supabase/schema.sql` despues de crear el usuario. Si existe exactamente un usuario, el script lo agrega automaticamente a `public.portfolio_admins`.
-- Si existen varios usuarios, agrega expresamente el UUID correcto desde SQL con `insert into public.portfolio_admins (user_id) values ('UUID_DEL_ADMIN');`.
+- Desactiva nuevos registros públicos en la configuración de Supabase Auth.
+- Ejecuta `supabase/schema.sql` despues de crear el usuario.
+- Agrega expresamente el UUID correcto desde SQL con `insert into public.portfolio_admins (user_id) values ('UUID_DEL_ADMIN');`.
 - Confirma la configuracion con `select * from public.portfolio_admins;` antes de desplegar el frontend actualizado.
 - Usa ese usuario para entrar al panel en `/admin/login`.
 
@@ -55,15 +56,23 @@ Tambien existen ejemplos en `.env.example` y `sample/.env.example`.
 - `/admin/credentials`: listar, filtrar, publicar/despublicar y eliminar credenciales.
 - `/admin/credentials/new`: crear credencial.
 - `/admin/credentials/edit/[id]`: editar credencial.
+- `/admin/news`: listar, publicar/despublicar y eliminar articulos.
+- `/admin/news/new`: crear un articulo bilingue.
+- `/admin/news/edit/[id]`: editar un articulo.
+- Al reemplazar o eliminar contenido desde el panel, las imagenes subidas se retiran tambien de Supabase Storage.
+- Cada articulo admite hasta tres imagenes; la primera funciona como portada y las restantes como galeria.
+- La fecha de cada articulo se elige mediante un calendario interactivo en el panel.
 
 ## Contenido Publico
 - Proyectos publicos se leen desde Supabase `projects` con `published = true`.
 - Cursos, certificaciones, diplomas, reconocimientos y estudios se leen desde Supabase `credentials` con `published = true`.
+- Los articulos se publican en `/articulos` (espanol) y `/articles` (ingles), con una URL indexable por publicacion.
+- El sitemap dinamico incluye automaticamente los articulos publicados en ambos idiomas.
 - El idioma se mantiene con los campos `title_es`, `title_en`, `description_es` y `description_en`.
 - Las imagenes subidas desde el panel se guardan en Supabase Storage y se persisten como URL publica en `image_url`.
 
 ## Estructura Breve
-- `src/pages/en/index.astro` y `src/pages/es/index.astro`: paginas publicas.
+- `src/pages/articulos/` y `src/pages/articles/`: archivo y detalle bilingue de articulos.
 - `src/pages/admin/`: rutas del panel administrativo.
 - `src/components/sections/`: Hero, ProjectsSection, CoursesSection, ContactSection.
 - `src/components/`: tarjetas reutilizables (`ProjectCard`, `CourseCard`), UI (`Modal`, `Card`), layout (`Navbar`, `Footer`).
