@@ -87,17 +87,26 @@ export function bindFileName(inputId: string, labelId: string) {
   const input = document.getElementById(inputId) as HTMLInputElement | null;
   const label = document.getElementById(labelId);
   input?.addEventListener("change", () => {
-    if (label) label.textContent = input.files?.[0]?.name || "Ningun archivo seleccionado";
+    if (!label) return;
+    const files = Array.from(input.files ?? []);
+    label.textContent = files.length === 0
+      ? "Ningun archivo seleccionado"
+      : files.length === 1
+        ? files[0].name
+        : `${files.length} archivos seleccionados`;
   });
 }
 
-export async function uploadImage(fileInputId: string, folder: string) {
-  const fileInput = document.getElementById(fileInputId) as HTMLInputElement | null;
-  const file = fileInput?.files?.[0];
-  if (!file) return null;
+export function clearFileInput(inputId: string, labelId: string) {
+  const input = document.getElementById(inputId) as HTMLInputElement | null;
+  const label = document.getElementById(labelId);
+  if (input) input.value = "";
+  if (label) label.textContent = "Ningun archivo seleccionado";
+}
 
+async function validateImage(file: File) {
   if (file.size > MAX_IMAGE_SIZE_BYTES) {
-    throw new Error("La imagen no puede superar 5 MB.");
+    throw new Error(`La imagen ${file.name} no puede superar 5 MB.`);
   }
 
   const imageType = allowedImageTypes[file.type as keyof typeof allowedImageTypes];
@@ -107,13 +116,20 @@ export async function uploadImage(fileInputId: string, folder: string) {
 
   const signatureBytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
   if (!imageType.signature(signatureBytes)) {
-    throw new Error("El contenido del archivo no coincide con un formato de imagen permitido.");
+    throw new Error(`El contenido de ${file.name} no coincide con un formato de imagen permitido.`);
   }
 
+  return imageType;
+}
+
+function validateStorageFolder(folder: string) {
   if (!/^[a-z0-9-]+$/i.test(folder)) {
     throw new Error("La carpeta de destino no es valida.");
   }
+}
 
+async function uploadFile(file: File, folder: string) {
+  const imageType = await validateImage(file);
   const fileName = `${folder}/${crypto.randomUUID()}.${imageType.extension}`;
   const { error } = await supabase.storage.from(mediaBucket).upload(fileName, file, {
     upsert: false,
@@ -123,6 +139,61 @@ export async function uploadImage(fileInputId: string, folder: string) {
 
   const { data } = supabase.storage.from(mediaBucket).getPublicUrl(fileName);
   return data.publicUrl;
+}
+
+export async function uploadImage(fileInputId: string, folder: string) {
+  const fileInput = document.getElementById(fileInputId) as HTMLInputElement | null;
+  const file = fileInput?.files?.[0];
+  if (!file) return null;
+  validateStorageFolder(folder);
+  return uploadFile(file, folder);
+}
+
+export async function uploadImages(fileInputId: string, folder: string, maxFiles = 3) {
+  const fileInput = document.getElementById(fileInputId) as HTMLInputElement | null;
+  const files = Array.from(fileInput?.files ?? []);
+  if (files.length === 0) return [];
+  if (files.length > maxFiles) {
+    throw new Error(`Solo puedes adjuntar ${maxFiles} imagenes.`);
+  }
+
+  validateStorageFolder(folder);
+  const uploadedUrls: string[] = [];
+  try {
+    for (const file of files) uploadedUrls.push(await uploadFile(file, folder));
+    return uploadedUrls;
+  } catch (error) {
+    await removeStoredImages(uploadedUrls);
+    throw error;
+  }
+}
+
+export function storageObjectPath(value: string | null | undefined) {
+  if (!value) return null;
+  try {
+    const url = new URL(value);
+    const supabaseHost = new URL(import.meta.env.PUBLIC_SUPABASE_URL).host;
+    if (url.host !== supabaseHost) return null;
+    const marker = `/storage/v1/object/public/${mediaBucket}/`;
+    if (!url.pathname.startsWith(marker)) return null;
+    const path = decodeURIComponent(url.pathname.slice(marker.length));
+    if (!path || path.startsWith("/") || path.split("/").includes("..")) return null;
+    return path;
+  } catch {
+    return null;
+  }
+}
+
+export async function removeStoredImages(values: Array<string | null | undefined>) {
+  const paths = [...new Set(values.map(storageObjectPath).filter((path): path is string => Boolean(path)))];
+  if (paths.length === 0) return 0;
+  const { error } = await supabase.storage.from(mediaBucket).remove(paths);
+  if (error) throw error;
+  return paths.length;
+}
+
+export async function removeStoredImage(value: string | null | undefined) {
+  return removeStoredImages([value]);
 }
 
 export async function requireAdminSession() {

@@ -1,0 +1,4 @@
+---
+const { slug = "" } = Astro.params;
+return Astro.redirect(`/articles/${encodeURIComponent(slug)}`, 301);
+---

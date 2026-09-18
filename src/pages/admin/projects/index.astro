@@ -16,6 +16,7 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
 
   <script>
     import { supabase } from "../../../lib/supabase";
+    import { removeStoredImages } from "../../../lib/admin";
     import type { Project } from "../../../types/content";
 
     const list = document.getElementById("projects-list");
@@ -83,6 +84,13 @@ import AdminLayout from "../../../layouts/AdminLayout.astro";
           if (!confirm("Seguro que quieres eliminar este proyecto?")) return;
           const { error } = await supabase.from("projects").delete().eq("id", project.id);
           if (error) return setMessage(error.message, true);
+          try {
+            await removeStoredImages([project.image_url]);
+          } catch (storageError) {
+            const { error: restoreError } = await supabase.from("projects").insert(project);
+            const detail = storageError instanceof Error ? storageError.message : "No se pudo eliminar la imagen del Storage.";
+            return setMessage(restoreError ? `${detail} Tampoco se pudo restaurar el proyecto: ${restoreError.message}` : `${detail} El proyecto fue restaurado para que puedas intentarlo otra vez.`, true);
+          }
           await loadProjects();
         });
 

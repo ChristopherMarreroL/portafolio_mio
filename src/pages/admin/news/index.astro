@@ -1,0 +1,106 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Admin Artículos">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="text-3xl font-semibold tracking-tight">Artículos</h1>
+      <p class="mt-2 text-slate-500 dark:text-slate-400">Administra guías promocionales, traducciones y fechas de publicación.</p>
+    </div>
+    <a class="rounded-lg bg-slate-900 px-4 py-2 text-white dark:bg-white dark:text-slate-900" href="/admin/news/new">Nuevo artículo</a>
+  </div>
+
+  <p id="news-list-message" class="mt-6 text-sm text-slate-500 dark:text-slate-400" role="status" aria-live="polite">Cargando artículos...</p>
+  <div id="news-list" class="mt-6 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800"></div>
+
+  <script>
+    import { supabase } from "../../../lib/supabase";
+    import { removeStoredImages } from "../../../lib/admin";
+    import type { NewsPost } from "../../../types/content";
+
+    const list = document.getElementById("news-list");
+    const message = document.getElementById("news-list-message");
+
+    function setMessage(text: string, error = false) {
+      if (!message) return;
+      message.textContent = text;
+      message.setAttribute("role", error ? "alert" : "status");
+      message.className = error ? "mt-6 text-sm text-red-500" : "mt-6 text-sm text-slate-500 dark:text-slate-400";
+    }
+
+    function element<K extends keyof HTMLElementTagNameMap>(tag: K, className = "", text?: string) {
+      const node = document.createElement(tag);
+      node.className = className;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    }
+
+    async function loadNews() {
+      const { data, error } = await supabase.from("news_posts").select("*").order("published_at", { ascending: false, nullsFirst: false }).order("created_at", { ascending: false });
+      if (error) return setMessage(error.message, true);
+      const posts = (data ?? []) as NewsPost[];
+      setMessage(`${posts.length} artículos encontrados.`);
+      if (!list) return;
+
+      const table = element("table", "w-full min-w-[820px] text-left text-sm");
+      const head = element("thead", "bg-slate-50 text-slate-500 dark:bg-slate-900 dark:text-slate-400");
+      const headRow = element("tr");
+      ["Título", "App", "Publicación", "Estado", "Acciones"].forEach((label) => headRow.append(element("th", "px-4 py-3", label)));
+      head.append(headRow);
+      const body = element("tbody");
+
+      posts.forEach((post) => {
+        const row = element("tr", "border-t border-slate-200 dark:border-slate-800");
+        const titleCell = element("td", "px-4 py-3");
+        titleCell.append(element("strong", "", post.title_es), element("span", "block text-xs text-slate-500", post.slug));
+        const actionsCell = element("td", "px-4 py-3");
+        const actions = element("div", "flex flex-wrap gap-2");
+        const edit = element("a", "rounded-lg border border-slate-200 px-3 py-1 dark:border-slate-800", "Editar");
+        edit.href = `/admin/news/edit/${encodeURIComponent(post.id)}`;
+        const view = element("a", "rounded-lg border border-slate-200 px-3 py-1 dark:border-slate-800", "Ver");
+        view.href = `/articulos/${encodeURIComponent(post.slug)}`;
+        view.target = "_blank";
+        view.rel = "noopener noreferrer";
+        const toggle = element("button", "rounded-lg border border-slate-200 px-3 py-1 dark:border-slate-800", post.published ? "Despublicar" : "Publicar");
+        toggle.type = "button";
+        toggle.addEventListener("click", async () => {
+          const changes = { published: !post.published, published_at: post.published_at || new Date().toISOString() };
+          const { error } = await supabase.from("news_posts").update(changes).eq("id", post.id);
+          if (error) return setMessage(error.message, true);
+          await loadNews();
+        });
+        const remove = element("button", "rounded-lg border border-red-200 px-3 py-1 text-red-500 dark:border-red-900", "Eliminar");
+        remove.type = "button";
+        remove.addEventListener("click", async () => {
+          if (!confirm("¿Seguro que quieres eliminar este artículo?")) return;
+          const { error } = await supabase.from("news_posts").delete().eq("id", post.id);
+          if (error) return setMessage(error.message, true);
+          try {
+            await removeStoredImages(post.image_urls?.length ? post.image_urls : [post.image_url]);
+          } catch (storageError) {
+            const { error: restoreError } = await supabase.from("news_posts").insert(post);
+            const detail = storageError instanceof Error ? storageError.message : "No se pudieron eliminar las imágenes del Storage.";
+            return setMessage(restoreError ? `${detail} Tampoco se pudo restaurar el artículo: ${restoreError.message}` : `${detail} El artículo fue restaurado para que puedas intentarlo otra vez.`, true);
+          }
+          await loadNews();
+        });
+        actions.append(edit, view, toggle, remove);
+        actionsCell.append(actions);
+        const dateLabel = post.published_at ? new Intl.DateTimeFormat("es-VE", { dateStyle: "medium" }).format(new Date(post.published_at)) : "Sin fecha";
+        row.append(
+          titleCell,
+          element("td", "px-4 py-3", post.app_name),
+          element("td", "px-4 py-3", dateLabel),
+          element("td", "px-4 py-3", post.published ? "Publicada" : "Borrador"),
+          actionsCell,
+        );
+        body.append(row);
+      });
+      table.append(head, body);
+      list.replaceChildren(table);
+    }
+
+    await loadNews();
+  </script>
+</AdminLayout>

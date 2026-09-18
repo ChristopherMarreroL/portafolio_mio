@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "./sections/Hero.astro";
 import ProjectsSection from "./sections/ProjectsSection.astro";
+import NewsSection from "./sections/NewsSection.astro";
 import CoursesSection from "./sections/CoursesSection.astro";
 import ContactSection from "./sections/ContactSection.astro";
 
@@ -20,6 +21,7 @@ const description = lang === "es"
 <BaseLayout title={title} description={description} lang={lang}>
   <Hero lang={lang} />
   <ProjectsSection lang={lang} />
+  <NewsSection lang={lang} />
   <CoursesSection lang={lang} />
   <ContactSection lang={lang} />
 </BaseLayout>

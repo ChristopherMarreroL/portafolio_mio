@@ -1,0 +1,65 @@
+---
+import { safeHttpUrl } from "../../lib/urls";
+import type { Lang, NewsPost } from "../../types/content";
+
+const { post, lang = "en", featured = false } = Astro.props as {
+  post: NewsPost;
+  lang?: Lang;
+  featured?: boolean;
+};
+
+const title = lang === "es" ? post.title_es : post.title_en || post.title_es;
+const excerpt = lang === "es" ? post.excerpt_es : post.excerpt_en || post.excerpt_es;
+const basePath = lang === "es" ? "/articulos" : "/articles";
+const href = `${basePath}/${encodeURIComponent(post.slug)}`;
+const image = (post.image_urls?.length ? post.image_urls : [post.image_url])
+  .map(safeHttpUrl)
+  .find(Boolean);
+const date = post.published_at || post.created_at;
+const formattedDate = new Intl.DateTimeFormat(lang === "es" ? "es-VE" : "en-US", {
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+}).format(new Date(date));
+---
+
+<article class:list={[
+  "group relative overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950",
+  featured && "sm:col-span-2 sm:grid sm:grid-cols-[1.15fr_1fr]",
+]}>
+  <a href={href} class="absolute inset-0 z-10 rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500" aria-label={title}></a>
+
+  {image ? (
+    <div class:list={["overflow-hidden bg-slate-100 dark:bg-slate-900", featured ? "min-h-64" : "aspect-[16/9]"]}>
+      <img
+        src={image}
+        alt=""
+        loading="lazy"
+        class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025] motion-reduce:transform-none"
+      />
+    </div>
+  ) : (
+    <div class:list={[
+      "flex items-end bg-[radial-gradient(circle_at_20%_20%,rgba(14,165,233,.22),transparent_48%),linear-gradient(145deg,#0f172a,#020617)] p-6",
+      featured ? "min-h-64" : "aspect-[16/9]",
+    ]}>
+      <span class="font-mono text-xs uppercase tracking-[0.24em] text-sky-300">{post.app_name}</span>
+    </div>
+  )}
+
+  <div class="flex h-full flex-col p-5 sm:p-6">
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[0.7rem] uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">
+      <span>{post.app_name}</span>
+      <span aria-hidden="true">/</span>
+      <time datetime={date}>{formattedDate}</time>
+    </div>
+    <h3 class:list={["mt-4 font-semibold leading-tight tracking-tight text-slate-950 dark:text-white", featured ? "text-2xl sm:text-3xl" : "text-xl"]}>
+      {title}
+    </h3>
+    <p class="mt-3 line-clamp-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{excerpt}</p>
+    <span class="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-700 dark:text-sky-300">
+      {lang === "es" ? "Leer artículo" : "Read article"}
+      <span class="transition-transform group-hover:translate-x-1 motion-reduce:transform-none" aria-hidden="true">→</span>
+    </span>
+  </div>
+</article>

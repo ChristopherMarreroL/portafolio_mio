@@ -8,6 +8,7 @@ test("admin lists do not render database values through innerHTML", async () => 
   const files = await Promise.all([
     text("src/pages/admin/projects/index.astro"),
     text("src/pages/admin/credentials/index.astro"),
+    text("src/pages/admin/news/index.astro"),
   ]);
   files.forEach((source) => assert.doesNotMatch(source, /\.innerHTML\s*=/));
 });
@@ -16,8 +17,43 @@ test("Supabase mutations require the portfolio admin allowlist", async () => {
   const schema = await text("supabase/schema.sql");
   assert.match(schema, /create table if not exists public\.portfolio_admins/i);
   assert.match(schema, /create or replace function public\.is_portfolio_admin/i);
+  assert.doesNotMatch(schema, /select count\(\*\) from auth\.users/i);
   assert.doesNotMatch(schema, /create policy "Authenticated can (?:create|update|delete)/i);
   assert.match(schema, /file_size_limit\s*=\s*excluded\.file_size_limit/i);
+  assert.match(schema, /create table if not exists public\.news_posts/i);
+  assert.match(schema, /Public can read published news/i);
+  assert.match(schema, /news_posts_max_three_images/i);
+  assert.match(schema, /Portfolio admins can read portfolio media metadata/i);
+});
+
+test("JSON-LD escapes values that could close the script element", async () => {
+  const layout = await text("src/layouts/BaseLayout.astro");
+  assert.match(layout, /replace\(\/<\/g, "\\\\u003c"\)/);
+  assert.match(layout, /set:html=\{serializedStructuredData\}/);
+  assert.doesNotMatch(layout, /set:html=\{JSON\.stringify\(structuredData\)\}/);
+});
+
+test("admin image flows clean Storage and cap news galleries at three images", async () => {
+  const [adminHelpers, newsForm, projectEdit, credentialEdit, projectList, credentialList, newsList] = await Promise.all([
+    text("src/lib/admin.ts"),
+    text("src/components/admin/NewsForm.astro"),
+    text("src/pages/admin/projects/edit/[id].astro"),
+    text("src/pages/admin/credentials/edit/[id].astro"),
+    text("src/pages/admin/projects/index.astro"),
+    text("src/pages/admin/credentials/index.astro"),
+    text("src/pages/admin/news/index.astro"),
+  ]);
+  assert.match(adminHelpers, /export async function removeStoredImages/);
+  assert.match(adminHelpers, /export async function uploadImages/);
+  assert.match(newsForm, /multiple/);
+  assert.match(newsForm, /3 - baseImages\.length/);
+  assert.match(newsForm, /Eliminar imagen/);
+  assert.match(newsForm, /type="date"/);
+  assert.match(newsForm, /Selecciona la fecha de publicación en el calendario/);
+  assert.match(newsForm, /Completa el título, resumen y contenido en inglés antes de publicar/);
+  assert.match(projectEdit, /removeStoredImage\(previousUrl\)/);
+  assert.match(credentialEdit, /removeStoredImage\(previousUrl\)/);
+  [projectList, credentialList, newsList].forEach((source) => assert.match(source, /removeStoredImages/));
 });
 
 test("social preview is a 1200 by 630 PNG", async () => {
@@ -27,15 +63,23 @@ test("social preview is a 1200 by 630 PNG", async () => {
   assert.equal(image.readUInt32BE(20), 630);
 });
 
-test("SEO discovery files expose one clean canonical route", async () => {
-  const [robots, sitemap] = await Promise.all([
+test("SEO discovery exposes the portfolio and bilingual article routes", async () => {
+  const [robots, sitemap, spanishArticleRoute, englishArticleRoute] = await Promise.all([
     text("public/robots.txt"),
-    text("public/sitemap.xml"),
+    text("src/pages/sitemap.xml.ts"),
+    text("src/pages/articulos/[slug].astro"),
+    text("src/pages/articles/[slug].astro"),
   ]);
   assert.doesNotMatch(robots, /Disallow:\s*\/admin/i);
   assert.match(robots, /Sitemap:\s*https:\/\/elchrispuntocom\.vercel\.app\/sitemap\.xml/i);
-  assert.match(sitemap, /<loc>https:\/\/elchrispuntocom\.vercel\.app\/<\/loc>/);
-  assert.doesNotMatch(sitemap, /<loc>[^<]+\/(?:es|en)\/<\/loc>/);
+  assert.match(sitemap, /elchrispuntocom\.vercel\.app/);
+  assert.match(sitemap, /articulos/);
+  assert.match(sitemap, /articles/);
+  assert.doesNotMatch(sitemap, /novedades/);
+  assert.doesNotMatch(sitemap, /updates/);
+  [spanishArticleRoute, englishArticleRoute].forEach((source) => {
+    assert.match(source, /Astro\.response\.status\s*=\s*unavailable \? 503 : post \? 200 : 404/);
+  });
 });
 
 test("Vercel applies defensive browser headers", async () => {

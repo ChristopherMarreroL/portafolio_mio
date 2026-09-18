@@ -2,7 +2,7 @@ export type Lang = "es" | "en";
 
 export const t = {
   es: {
-    nav: { projects: "Proyectos", courses: "Cursos", contact: "Contacto" },
+    nav: { projects: "Proyectos", news: "Artículos", courses: "Cursos", contact: "Contacto" },
     hero: {
       hi: "Hola, soy",
       subtitle:
@@ -11,6 +11,7 @@ export const t = {
     },
     sections: {
       projects: "Proyectos",
+      news: "Artículos",
       courses: "Cursos y certificaciones",
       contact: "Contacto",
     },
@@ -25,7 +26,7 @@ export const t = {
     },
   },
   en: {
-    nav: { projects: "Projects", courses: "Courses", contact: "Contact" },
+    nav: { projects: "Projects", news: "Articles", courses: "Courses", contact: "Contact" },
     hero: {
       hi: "Hi, I'm",
       subtitle:
@@ -34,6 +35,7 @@ export const t = {
     },
     sections: {
       projects: "Projects",
+      news: "Articles",
       courses: "Courses & certifications",
       contact: "Contact",
     },

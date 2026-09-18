@@ -1,0 +1,51 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import NewsCard from "./news/NewsCard.astro";
+import { supabase } from "../lib/supabase";
+import type { Lang, NewsPost } from "../types/content";
+
+const { lang } = Astro.props as { lang: Lang };
+const now = new Date().toISOString();
+let postsQuery = supabase
+  .from("news_posts")
+  .select("*")
+  .eq("published", true)
+  .lte("published_at", now);
+if (lang === "en") {
+  postsQuery = postsQuery.not("title_en", "is", null).not("excerpt_en", "is", null).not("content_en", "is", null);
+}
+const { data, error } = await postsQuery
+  .order("featured", { ascending: false })
+  .order("published_at", { ascending: false });
+const posts = (data ?? []) as NewsPost[];
+const title = lang === "es" ? "Artículos sobre apps y herramientas | Christopher" : "Articles about apps and tools | Christopher";
+const description = lang === "es"
+  ? "Guías prácticas, análisis y recomendaciones sobre apps, sitios web y herramientas como Naroz."
+  : "Practical guides, analysis, and recommendations about apps, websites, and tools such as Naroz.";
+const alternatePath = lang === "es" ? "/articles" : "/articulos";
+---
+
+<BaseLayout title={title} description={description} lang={lang} alternatePath={alternatePath} alternateLang={lang === "es" ? "en" : "es"}>
+  <header class="relative overflow-hidden border-b border-slate-200 pb-10 pt-6 dark:border-slate-800 sm:pb-14 sm:pt-12">
+    <div class="pointer-events-none absolute right-0 top-0 select-none font-mono text-[6rem] font-bold leading-none tracking-[-0.09em] text-slate-100 dark:text-slate-900 sm:text-[10rem]" aria-hidden="true">
+      READ
+    </div>
+    <div class="relative max-w-3xl">
+      <a class="text-sm text-slate-500 hover:text-sky-700 dark:text-slate-400 dark:hover:text-sky-300" href="/">← {lang === "es" ? "Volver al portafolio" : "Back to portfolio"}</a>
+      <p class="mt-10 font-mono text-xs uppercase tracking-[0.24em] text-sky-700 dark:text-sky-300">
+        {lang === "es" ? "Guías y herramientas" : "Guides and tools"}
+      </p>
+      <h1 class="mt-3 text-4xl font-semibold tracking-[-0.04em] sm:text-6xl">
+        {lang === "es" ? "Artículos" : "Articles"}
+      </h1>
+    </div>
+  </header>
+
+  {error ? (
+    <p class="py-10 text-red-500">{lang === "es" ? "No se pudieron cargar los artículos." : "Articles could not be loaded."}</p>
+  ) : posts.length > 0 ? (
+    <section class="grid gap-5 py-10 sm:grid-cols-2" aria-label={lang === "es" ? "Todos los artículos" : "All articles"}>
+      {posts.map((post, index) => <NewsCard post={post} lang={lang} featured={index === 0 && post.featured} />)}
+    </section>
+  ) : null}
+</BaseLayout>
