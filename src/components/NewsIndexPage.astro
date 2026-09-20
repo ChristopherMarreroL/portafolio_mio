@@ -45,7 +45,7 @@ const alternatePath = lang === "es" ? "/articles" : "/articulos";
     <p class="py-10 text-red-500">{lang === "es" ? "No se pudieron cargar los artículos." : "Articles could not be loaded."}</p>
   ) : posts.length > 0 ? (
     <section class="grid gap-5 py-10 sm:grid-cols-2" aria-label={lang === "es" ? "Todos los artículos" : "All articles"}>
-      {posts.map((post, index) => <NewsCard post={post} lang={lang} featured={index === 0 && post.featured} />)}
+      {posts.map((post) => <NewsCard post={post} lang={lang} />)}
     </section>
   ) : null}
 </BaseLayout>

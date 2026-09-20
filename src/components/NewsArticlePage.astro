@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ArticleImageGallery from "./news/ArticleImageGallery.astro";
 import { safeHttpUrl } from "../lib/urls";
 import type { Lang, NewsPost } from "../types/content";
 
@@ -74,20 +75,7 @@ const articleSchema = post ? {
         <p class="mt-6 text-xl leading-8 text-slate-600 dark:text-slate-300">{excerpt}</p>
       </header>
 
-      {image && (
-        <div class:list={["mt-10 grid gap-3", images.length > 1 && "sm:grid-cols-2"]}>
-          {images.map((url, index) => (
-            <img
-              src={url}
-              alt={index === 0 ? title : `${post.app_name} — ${lang === "es" ? "imagen" : "image"} ${index + 1}`}
-              class:list={[
-                "w-full rounded-2xl border border-slate-200 object-cover dark:border-slate-800",
-                index === 0 && images.length > 1 ? "aspect-[16/10] sm:row-span-2 sm:h-full" : "aspect-[16/9]",
-              ]}
-            />
-          ))}
-        </div>
-      )}
+      <ArticleImageGallery images={images} title={title} appName={post.app_name} lang={lang} />
 
       <div class="mt-10 space-y-6 text-[1.05rem] leading-8 text-slate-700 dark:text-slate-200">
         {content.split(/\n\s*\n/).filter(Boolean).map((paragraph) => <p>{paragraph}</p>)}

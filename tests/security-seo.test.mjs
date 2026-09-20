@@ -82,6 +82,44 @@ test("SEO discovery exposes the portfolio and bilingual article routes", async (
   });
 });
 
+test("article listings use the same compact card layout for every post", async () => {
+  const [card, archive, homepage] = await Promise.all([
+    text("src/components/news/NewsCard.astro"),
+    text("src/components/NewsIndexPage.astro"),
+    text("src/components/sections/NewsSection.astro"),
+  ]);
+  assert.match(card, /aspect-\[16\/9\]/);
+  assert.doesNotMatch(card, /col-span-2|grid-cols-\[1\.15fr_1fr\]|featured/);
+  assert.doesNotMatch(archive, /<NewsCard[^>]*featured=/);
+  assert.doesNotMatch(homepage, /<NewsCard[^>]*featured=/);
+  assert.match(card, /object-contain/);
+  assert.doesNotMatch(card, /object-cover/);
+});
+
+test("article images open an accessible full-screen viewer without cropping", async () => {
+  const [article, gallery] = await Promise.all([
+    text("src/components/NewsArticlePage.astro"),
+    text("src/components/news/ArticleImageGallery.astro"),
+  ]);
+  assert.match(article, /<ArticleImageGallery/);
+  assert.match(gallery, /<dialog/);
+  assert.match(gallery, /dialog\.showModal\(\)/);
+  assert.match(gallery, /dialog\.close\(\)/);
+  assert.match(gallery, /object-contain/);
+  assert.doesNotMatch(gallery, /object-cover/);
+  assert.match(gallery, /data-zoom-in/);
+  assert.match(gallery, /data-zoom-out/);
+  assert.match(gallery, /fittedWidth \* \(1 \+ zoomStep \* 0\.1\)/);
+  assert.match(gallery, /if \(value > 0 && !imageReady\) return/);
+  assert.match(gallery, /fullImage\.addEventListener\("load"/);
+  assert.match(gallery, /fullImage\.addEventListener\("pointerdown"/);
+  assert.match(gallery, /fullImage\.addEventListener\("pointermove"/);
+  assert.match(gallery, /stage\.scrollLeft = drag\.left - \(event\.clientX - drag\.x\)/);
+  assert.match(gallery, /stage\.scrollTop = drag\.top - \(event\.clientY - drag\.y\)/);
+  assert.match(gallery, /draggable="false"/);
+  assert.doesNotMatch(gallery, /zoom \+ 0\.5|zoom - 0\.5/);
+});
+
 test("Vercel applies defensive browser headers", async () => {
   const config = JSON.parse(await text("vercel.json"));
   const globalHeaders = new Map(config.headers[0].headers.map(({ key, value }) => [key, value]));
