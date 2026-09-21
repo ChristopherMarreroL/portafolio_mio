@@ -1,5 +1,6 @@
 ---
 import { safeHttpUrl } from "../../lib/urls";
+import { isEmbeddablePdfUrl, isPdfUrl } from "../../lib/media";
 import type { Lang, NewsPost } from "../../types/content";
 
 const { post, lang = "en" } = Astro.props as {
@@ -14,6 +15,8 @@ const href = `${basePath}/${encodeURIComponent(post.slug)}`;
 const image = (post.image_urls?.length ? post.image_urls : [post.image_url])
   .map(safeHttpUrl)
   .find(Boolean);
+const previewIsPdf = isPdfUrl(image);
+const previewCanEmbedPdf = isEmbeddablePdfUrl(image);
 const date = post.published_at || post.created_at;
 const formattedDate = new Intl.DateTimeFormat(lang === "es" ? "es-VE" : "en-US", {
   day: "2-digit",
@@ -27,12 +30,18 @@ const formattedDate = new Intl.DateTimeFormat(lang === "es" ? "es-VE" : "en-US",
 
   {image ? (
     <div class="aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-900">
-      <img
-        src={image}
-        alt=""
-        loading="lazy"
-        class="h-full w-full object-contain p-2 transition duration-500 group-hover:scale-[1.025] motion-reduce:transform-none sm:p-3"
-      />
+      {previewIsPdf ? (
+        <div class="relative h-full w-full p-2 sm:p-3">
+          {previewCanEmbedPdf ? (
+            <iframe src={`${image}#page=1&view=FitH`} title="" aria-hidden="true" tabindex="-1" loading="lazy" class="pointer-events-none h-full w-full rounded-lg bg-white"></iframe>
+          ) : (
+            <div class="flex h-full w-full items-center justify-center rounded-lg bg-white"><span class="text-5xl font-black tracking-[-0.08em] text-red-600">PDF</span></div>
+          )}
+          <span class="absolute bottom-4 left-4 rounded-full bg-red-600 px-3 py-1 font-mono text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-white shadow-sm">PDF</span>
+        </div>
+      ) : (
+        <img src={image} alt="" loading="lazy" class="h-full w-full object-contain p-2 transition duration-500 group-hover:scale-[1.025] motion-reduce:transform-none sm:p-3" />
+      )}
     </div>
   ) : (
     <div class="flex aspect-[16/9] items-end bg-[radial-gradient(circle_at_20%_20%,rgba(14,165,233,.22),transparent_48%),linear-gradient(145deg,#0f172a,#020617)] p-6">

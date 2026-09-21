@@ -1,5 +1,6 @@
 ---
 import Modal from "./ui/Modal.astro";
+import { isEmbeddablePdfUrl, isPdfUrl } from "../lib/media";
 
 type Lang = "es" | "en";
 type I18nText = { es: string; en: string };
@@ -21,6 +22,8 @@ const titleText = course.title?.[lang] ?? course.title.en;
 const providerText = course.provider?.[lang] ?? course.provider.en;
 
 const modalId = `cert-${course.title.en.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`;
+const previewIsPdf = isPdfUrl(course.image);
+const previewCanEmbedPdf = isEmbeddablePdfUrl(course.image);
 ---
 
 <article
@@ -107,13 +110,31 @@ const modalId = `cert-${course.title.en.replace(/[^a-z0-9]+/gi, "-").toLowerCase
               {providerText}{course.date ? ` - ${course.date}` : ""}
             </p>
 
-            <img
-              src={course.image}
-              alt={`${lang === "es" ? "Certificado" : "Certificate"}: ${titleText}`}
-              class="mx-auto w-full max-w-2xl rounded-lg border border-slate-200 object-contain dark:border-slate-800"
-              loading="lazy"
-              style="max-height: 80vh;"
-            />
+            {previewIsPdf ? (
+              <>
+                {previewCanEmbedPdf ? (
+                  <iframe
+                    src={`${course.image}#view=FitH`}
+                    title={`${lang === "es" ? "Documento PDF" : "PDF document"}: ${titleText}`}
+                    class="h-[70vh] w-full rounded-lg border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900"
+                    loading="lazy"
+                  ></iframe>
+                ) : (
+                  <div class="flex min-h-72 flex-col items-center justify-center rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900"><span class="text-6xl font-black tracking-[-0.08em] text-red-600">PDF</span><p class="mt-3 text-sm text-slate-500 dark:text-slate-400">{lang === "es" ? "Este documento externo se abre en una pestaña segura." : "This external document opens in a separate tab."}</p></div>
+                )}
+                <a href={course.image} target="_blank" rel="noopener noreferrer" class="inline-flex rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white dark:bg-white dark:text-slate-950">
+                  {lang === "es" ? "Abrir PDF completo ↗" : "Open full PDF ↗"}
+                </a>
+              </>
+            ) : (
+              <img
+                src={course.image}
+                alt={`${lang === "es" ? "Certificado" : "Certificate"}: ${titleText}`}
+                class="mx-auto w-full max-w-2xl rounded-lg border border-slate-200 object-contain dark:border-slate-800"
+                loading="lazy"
+                style="max-height: 80vh;"
+              />
+            )}
           </div>
         </Modal>
       </>

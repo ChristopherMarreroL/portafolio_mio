@@ -2,11 +2,12 @@ import { supabase } from "./supabase";
 
 export const mediaBucket = "portfolio-media";
 
-const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
-const allowedImageTypes = {
+const MAX_MEDIA_SIZE_BYTES = 5 * 1024 * 1024;
+const allowedMediaTypes = {
   "image/jpeg": { extension: "jpg", signature: (bytes: Uint8Array) => bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff },
   "image/png": { extension: "png", signature: (bytes: Uint8Array) => bytes.length >= 8 && [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a].every((byte, index) => bytes[index] === byte) },
   "image/webp": { extension: "webp", signature: (bytes: Uint8Array) => bytes.length >= 12 && String.fromCharCode(...bytes.slice(0, 4)) === "RIFF" && String.fromCharCode(...bytes.slice(8, 12)) === "WEBP" },
+  "application/pdf": { extension: "pdf", signature: (bytes: Uint8Array) => bytes.length >= 5 && String.fromCharCode(...bytes.slice(0, 5)) === "%PDF-" },
 } satisfies Record<string, { extension: string; signature: (bytes: Uint8Array) => boolean }>;
 
 export function validateHttpUrl(value: string) {
@@ -104,22 +105,22 @@ export function clearFileInput(inputId: string, labelId: string) {
   if (label) label.textContent = "Ningun archivo seleccionado";
 }
 
-async function validateImage(file: File) {
-  if (file.size > MAX_IMAGE_SIZE_BYTES) {
-    throw new Error(`La imagen ${file.name} no puede superar 5 MB.`);
+async function validateMedia(file: File) {
+  if (file.size > MAX_MEDIA_SIZE_BYTES) {
+    throw new Error(`El archivo ${file.name} no puede superar 5 MB.`);
   }
 
-  const imageType = allowedImageTypes[file.type as keyof typeof allowedImageTypes];
-  if (!imageType) {
-    throw new Error("Solo se permiten imagenes PNG, JPEG o WEBP.");
+  const mediaType = allowedMediaTypes[file.type as keyof typeof allowedMediaTypes];
+  if (!mediaType) {
+    throw new Error("Solo se permiten imágenes PNG, JPEG, WEBP o documentos PDF.");
   }
 
   const signatureBytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
-  if (!imageType.signature(signatureBytes)) {
-    throw new Error(`El contenido de ${file.name} no coincide con un formato de imagen permitido.`);
+  if (!mediaType.signature(signatureBytes)) {
+    throw new Error(`El contenido de ${file.name} no coincide con un formato permitido.`);
   }
 
-  return imageType;
+  return mediaType;
 }
 
 function validateStorageFolder(folder: string) {
@@ -129,8 +130,8 @@ function validateStorageFolder(folder: string) {
 }
 
 async function uploadFile(file: File, folder: string) {
-  const imageType = await validateImage(file);
-  const fileName = `${folder}/${crypto.randomUUID()}.${imageType.extension}`;
+  const mediaType = await validateMedia(file);
+  const fileName = `${folder}/${crypto.randomUUID()}.${mediaType.extension}`;
   const { error } = await supabase.storage.from(mediaBucket).upload(fileName, file, {
     upsert: false,
     contentType: file.type,
@@ -154,7 +155,7 @@ export async function uploadImages(fileInputId: string, folder: string, maxFiles
   const files = Array.from(fileInput?.files ?? []);
   if (files.length === 0) return [];
   if (files.length > maxFiles) {
-    throw new Error(`Solo puedes adjuntar ${maxFiles} imagenes.`);
+    throw new Error(`Solo puedes adjuntar ${maxFiles} archivos.`);
   }
 
   validateStorageFolder(folder);

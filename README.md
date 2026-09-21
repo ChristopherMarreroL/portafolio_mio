@@ -36,7 +36,7 @@ Tambien existen ejemplos en `.env.example` y `sample/.env.example`.
 - El SQL crea una allowlist `portfolio_admins` y limita la administracion a esos usuarios.
 - El SQL crea o actualiza el bucket publico `portfolio-media`.
 - Las politicas de Storage permiten lectura publica y escritura solo a administradores autorizados.
-- El bucket limita las cargas a imagenes PNG, JPEG o WEBP de hasta 5 MB.
+- El bucket limita las cargas a imágenes PNG, JPEG, WEBP o documentos PDF de hasta 5 MB.
 
 ## Usuario Administrador
 - Ve a Supabase Auth.
@@ -60,7 +60,8 @@ Tambien existen ejemplos en `.env.example` y `sample/.env.example`.
 - `/admin/news/new`: crear un articulo bilingue.
 - `/admin/news/edit/[id]`: editar un articulo.
 - Al reemplazar o eliminar contenido desde el panel, las imagenes subidas se retiran tambien de Supabase Storage.
-- Cada articulo admite hasta tres imagenes; la primera funciona como portada y las restantes como galeria.
+- Cada artículo admite hasta tres imágenes o PDF; el primer archivo funciona como portada y los restantes como galería.
+- Proyectos, formaciones y artículos muestran los PDF dentro de una vista previa y permiten abrir el documento completo.
 - La fecha de cada articulo se elige mediante un calendario interactivo en el panel.
 
 ## Contenido Publico

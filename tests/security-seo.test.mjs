@@ -47,13 +47,50 @@ test("admin image flows clean Storage and cap news galleries at three images", a
   assert.match(adminHelpers, /export async function uploadImages/);
   assert.match(newsForm, /multiple/);
   assert.match(newsForm, /3 - baseImages\.length/);
-  assert.match(newsForm, /Eliminar imagen/);
+  assert.match(newsForm, /Eliminar archivo/);
   assert.match(newsForm, /type="date"/);
   assert.match(newsForm, /Selecciona la fecha de publicación en el calendario/);
   assert.match(newsForm, /Completa el título, resumen y contenido en inglés antes de publicar/);
   assert.match(projectEdit, /removeStoredImage\(previousUrl\)/);
   assert.match(credentialEdit, /removeStoredImage\(previousUrl\)/);
   [projectList, credentialList, newsList].forEach((source) => assert.match(source, /removeStoredImages/));
+});
+
+test("portfolio media accepts only verified images or PDF documents", async () => {
+  const [adminHelpers, schema, projectForm, credentialForm, newsForm, media] = await Promise.all([
+    text("src/lib/admin.ts"),
+    text("supabase/schema.sql"),
+    text("src/pages/admin/projects/new.astro"),
+    text("src/pages/admin/credentials/new.astro"),
+    text("src/components/admin/NewsForm.astro"),
+    text("src/lib/media.ts"),
+  ]);
+  assert.match(adminHelpers, /"application\/pdf"/);
+  assert.match(adminHelpers, /%PDF-/);
+  assert.match(adminHelpers, /MAX_MEDIA_SIZE_BYTES = 5 \* 1024 \* 1024/);
+  assert.match(schema, /'application\/pdf'/);
+  for (const form of [projectForm, credentialForm, newsForm]) {
+    assert.match(form, /accept="image\/png,image\/jpeg,image\/webp,application\/pdf"/);
+  }
+  assert.match(media, /export function isPdfUrl/);
+  assert.match(media, /export function isEmbeddablePdfUrl/);
+  assert.match(media, /url\.host === supabaseUrl\.host/);
+  assert.match(media, /\/storage\/v1\/object\/public\/portfolio-media\//);
+});
+
+test("public project, credential, and article previews render PDFs safely", async () => {
+  const [project, course, articleCard, gallery] = await Promise.all([
+    text("src/components/ProjectCard.astro"),
+    text("src/components/CourseCard.astro"),
+    text("src/components/news/NewsCard.astro"),
+    text("src/components/news/ArticleImageGallery.astro"),
+  ]);
+  for (const component of [project, course, articleCard, gallery]) assert.match(component, /isPdfUrl|data-pdf/);
+  assert.match(project, /Open full PDF|Abrir PDF completo/);
+  assert.match(course, /Open full PDF|Abrir PDF completo/);
+  assert.match(gallery, /data-lightbox-pdf/);
+  assert.match(gallery, /rel="noopener noreferrer"/);
+  assert.doesNotMatch(gallery, /sandbox=/);
 });
 
 test("social preview is a 1200 by 630 PNG", async () => {
@@ -124,6 +161,8 @@ test("Vercel applies defensive browser headers", async () => {
   const config = JSON.parse(await text("vercel.json"));
   const globalHeaders = new Map(config.headers[0].headers.map(({ key, value }) => [key, value]));
   assert.match(globalHeaders.get("Content-Security-Policy"), /frame-ancestors 'none'/);
+  assert.match(globalHeaders.get("Content-Security-Policy"), /frame-src https:\/\/laaoekodrgspujfwkrkg\.supabase\.co/);
+  assert.doesNotMatch(globalHeaders.get("Content-Security-Policy"), /frame-src https:;/);
   assert.equal(globalHeaders.get("X-Frame-Options"), "DENY");
   assert.equal(globalHeaders.get("X-Content-Type-Options"), "nosniff");
 });

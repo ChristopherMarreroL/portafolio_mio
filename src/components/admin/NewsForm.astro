@@ -31,18 +31,18 @@ const editing = mode === "edit";
   <label class="text-sm">Temas o menciones, separados por coma<input id="tags" placeholder="código QR, productividad, web app" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" /></label>
   <div class="grid gap-4 md:grid-cols-2">
     <label class="text-sm">URL de la app<input id="app_url" type="url" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" /></label>
-    <label class="text-sm">URL externa de imagen <span class="text-slate-400">(opcional)</span><input id="image_url" type="url" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" /></label>
+    <label class="text-sm">URL externa de imagen o PDF <span class="text-slate-400">(opcional)</span><input id="image_url" type="url" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950" /></label>
   </div>
   <div class="text-sm">
-    <span>Imágenes <span class="text-slate-400">(máximo 3; la primera será la portada)</span></span>
+    <span>Imágenes o PDF <span class="text-slate-400">(máximo 3 archivos de 5 MB; el primero será la portada)</span></span>
     <div class="mt-1 flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 px-3 py-2 dark:border-slate-800">
-      <label for="image_file" class="cursor-pointer rounded-lg bg-slate-900 px-3 py-2 font-medium text-white dark:bg-white dark:text-slate-900">Elegir imágenes</label>
+      <label for="image_file" class="cursor-pointer rounded-lg bg-slate-900 px-3 py-2 font-medium text-white dark:bg-white dark:text-slate-900">Elegir archivos</label>
       <span id="image_file_name" class="text-slate-500 dark:text-slate-400">Ningún archivo seleccionado</span>
       <button id="clear-image-files" type="button" class="rounded-lg border border-slate-200 px-3 py-2 text-xs dark:border-slate-700">Quitar selección</button>
-      <input id="image_file" type="file" accept="image/png,image/jpeg,image/webp" multiple class="sr-only" />
+      <input id="image_file" type="file" accept="image/png,image/jpeg,image/webp,application/pdf" multiple class="sr-only" />
     </div>
   </div>
-  <div id="existing-images" class="hidden grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-label="Imágenes actuales"></div>
+  <div id="existing-images" class="hidden grid gap-3 sm:grid-cols-2 lg:grid-cols-3" aria-label="Archivos actuales"></div>
   <div class="grid gap-4 md:grid-cols-3">
     <label class="text-sm">Fecha de publicación<input id="published_at" type="date" class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 [color-scheme:light] dark:border-slate-800 dark:bg-slate-950 dark:[color-scheme:dark]" /></label>
     <label class="mt-7 flex items-center gap-2 text-sm"><input id="featured" type="checkbox" /> Destacada</label>
@@ -58,6 +58,7 @@ const editing = mode === "edit";
 
 <script>
   import { supabase } from "../../lib/supabase";
+  import { isEmbeddablePdfUrl, isPdfUrl } from "../../lib/media";
   import { bindFileName, checkedValue, clearFileInput, inputValue, listToInput, parseList, removeStoredImage, removeStoredImages, setChecked, setFormSubmitting, setValue, showMessage, slugify, uploadImages } from "../../lib/admin";
   import type { NewsPost } from "../../types/content";
 
@@ -90,21 +91,26 @@ const editing = mode === "edit";
     currentImages.forEach((url, index) => {
       const card = document.createElement("div");
       card.className = "overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800";
-      const image = document.createElement("img");
-      image.src = url;
-      image.alt = `Imagen ${index + 1}`;
-      image.className = "aspect-video w-full object-cover";
+      const isPdf = isPdfUrl(url);
+      const embedPdf = isEmbeddablePdfUrl(url);
+      const preview = document.createElement(isPdf ? (embedPdf ? "iframe" : "div") : "img");
+      if (!isPdf || embedPdf) preview.setAttribute("src", url);
+      if (isPdf && !embedPdf) preview.textContent = "PDF externo — abrir desde la publicación";
+      preview.setAttribute("title", isPdf ? `PDF ${index + 1}` : `Imagen ${index + 1}`);
+      preview.className = isPdf && !embedPdf
+        ? "flex aspect-video w-full items-center justify-center bg-slate-100 text-sm font-semibold text-slate-600 dark:bg-slate-900 dark:text-slate-300"
+        : "aspect-video w-full bg-slate-100 object-contain dark:bg-slate-900";
       const footer = document.createElement("div");
       footer.className = "flex items-center justify-between gap-2 p-3";
       const label = document.createElement("span");
       label.className = "text-xs text-slate-500 dark:text-slate-400";
-      label.textContent = index === 0 ? "Portada" : `Imagen ${index + 1}`;
+      label.textContent = index === 0 ? (isPdf ? "PDF de portada" : "Portada") : (isPdf ? `PDF ${index + 1}` : `Imagen ${index + 1}`);
       const removeButton = document.createElement("button");
       removeButton.type = "button";
       removeButton.className = "rounded-lg border border-red-200 px-3 py-1 text-xs text-red-600 dark:border-red-900 dark:text-red-400";
-      removeButton.textContent = "Eliminar imagen";
+      removeButton.textContent = "Eliminar archivo";
       removeButton.addEventListener("click", async () => {
-        if (!confirm("¿Quieres eliminar esta imagen? También se retirará del Storage si fue subida desde el panel.")) return;
+        if (!confirm("¿Quieres eliminar este archivo? También se retirará del Storage si fue subido desde el panel.")) return;
         const previousImages = [...currentImages];
         const nextImages = currentImages.filter((item) => item !== url);
         removeButton.disabled = true;
@@ -125,14 +131,14 @@ const editing = mode === "edit";
             renderCurrentImages();
             throw storageError;
           }
-          showMessage("news-message", "Imagen eliminada.", "success");
+          showMessage("news-message", "Archivo eliminado.", "success");
         } catch (error) {
-          showMessage("news-message", error instanceof Error ? error.message : "No se pudo eliminar la imagen.", "error");
+          showMessage("news-message", error instanceof Error ? error.message : "No se pudo eliminar el archivo.", "error");
           removeButton.disabled = false;
         }
       });
       footer.append(label, removeButton);
-      card.append(image, footer);
+      card.append(preview, footer);
       existingImagesContainer.append(card);
     });
   }
@@ -170,10 +176,10 @@ const editing = mode === "edit";
     try {
       const externalUrl = inputValue("image_url");
       const baseImages = externalUrl && !currentImages.includes(externalUrl) ? [...currentImages, externalUrl] : [...currentImages];
-      if (baseImages.length > 3) throw new Error("Solo puedes guardar hasta 3 imágenes por artículo.");
+      if (baseImages.length > 3) throw new Error("Solo puedes guardar hasta 3 archivos por artículo.");
       uploadedUrls = await uploadImages("image_file", "news", 3 - baseImages.length);
       const finalImages = [...baseImages, ...uploadedUrls];
-      if (finalImages.length > 3) throw new Error("Solo puedes guardar hasta 3 imágenes por artículo.");
+      if (finalImages.length > 3) throw new Error("Solo puedes guardar hasta 3 archivos por artículo.");
       const published = checkedValue("published");
       const publicationDate = inputValue("published_at");
       if (published && !publicationDate) throw new Error("Selecciona la fecha de publicación en el calendario.");

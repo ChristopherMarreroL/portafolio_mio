@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ArticleImageGallery from "./news/ArticleImageGallery.astro";
+import { isPdfUrl } from "../lib/media";
 import { safeHttpUrl } from "../lib/urls";
 import type { Lang, NewsPost } from "../types/content";
 
@@ -20,7 +21,7 @@ const content = post ? (lang === "es" ? post.content_es : post.content_en || pos
 const images = post
   ? (post.image_urls?.length ? post.image_urls : [post.image_url]).map(safeHttpUrl).filter((url): url is string => Boolean(url)).slice(0, 3)
   : [];
-const image = images[0];
+const image = images.find((url) => !isPdfUrl(url));
 const appUrl = post ? safeHttpUrl(post.app_url) : undefined;
 const archivePath = lang === "es" ? "/articulos" : "/articles";
 const hasEnglishVersion = Boolean(post?.title_en && post?.excerpt_en && post?.content_en);
@@ -34,7 +35,7 @@ const articleSchema = post ? {
   "@type": "Article",
   headline: title,
   description: excerpt,
-  image: images.length > 0 ? images : undefined,
+  image: images.filter((url) => !isPdfUrl(url)).length > 0 ? images.filter((url) => !isPdfUrl(url)) : undefined,
   datePublished: date,
   dateModified: post.updated_at,
   inLanguage: lang,

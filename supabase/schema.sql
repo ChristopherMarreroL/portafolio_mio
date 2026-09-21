@@ -259,7 +259,7 @@ values (
   'portfolio-media',
   true,
   5242880,
-  array['image/png', 'image/jpeg', 'image/webp']::text[]
+  array['image/png', 'image/jpeg', 'image/webp', 'application/pdf']::text[]
 )
 on conflict (id) do update set
   public = excluded.public,
