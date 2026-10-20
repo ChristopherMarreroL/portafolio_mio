@@ -3,13 +3,20 @@
 Sitio web construido con Astro, TypeScript, Tailwind CSS 4 y Supabase para presentar perfil, proyectos y trayectoria formativa. Incluye un panel administrativo para crear, editar, eliminar, publicar y despublicar contenido sin modificar archivos JSON manualmente.
 
 ## Tecnologias
-- Astro 5 con adapter de Vercel para SSR.
+- Astro 7.4.1 con adapter de Vercel 11.0.16 para SSR.
 - TypeScript habilitado en Astro.
 - Tailwind CSS 4 via `@tailwindcss/vite`.
 - Supabase Auth, PostgreSQL y Storage.
 
+## Requisitos
+- Node.js 22.22.0 o superior (verificado con Node.js 24.14.0).
+- npm 9.6.5 o superior, o Bun 1.3.14 o superior como alternativa.
+- El archivo `bun.lock` fue generado y verificado con Bun 1.3.14. Las versiones anteriores de Bun no están soportadas para este archivo de bloqueo.
+
 ## Instalacion
-- Ejecuta `npm install` para instalar dependencias.
+- Ejecuta `npm ci` para instalar las versiones fijadas en `package-lock.json`.
+- Si usas Bun, comprueba primero `bun --version` (mínimo 1.3.14) y ejecuta `bun install --frozen-lockfile` para instalar las versiones fijadas en `bun.lock`.
+- Al modificar dependencias, actualiza y versiona ambos archivos de bloqueo.
 - Ejecuta `npm run dev` para desarrollo local.
 - Ejecuta `npm run build` para generar el build de produccion.
 - Ejecuta `npm run preview` para previsualizar el build.
