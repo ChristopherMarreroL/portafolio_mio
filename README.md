@@ -63,6 +63,7 @@ Tambien existen ejemplos en `.env.example` y `sample/.env.example`.
 - Al reemplazar o eliminar contenido desde el panel, las imagenes subidas se retiran tambien de Supabase Storage.
 - Cada artículo admite hasta tres imágenes o PDF; el primer archivo funciona como portada y los restantes como galería.
 - Proyectos, formaciones y artículos muestran los PDF dentro de una vista previa y permiten abrir el documento completo.
+- Los certificados usan PDF.js para ajustar la página completa en móviles, ampliar o reducir desde 25% hasta 400%, volver a «Ajustar» y navegar entre páginas. El PDF solo se carga al abrir su diálogo; cerrar libera el documento. Los recursos del visor se sirven desde el propio sitio en `/pdf-assets/`.
 - La fecha de cada articulo se elige mediante un calendario interactivo en el panel.
 
 ## Contenido Publico

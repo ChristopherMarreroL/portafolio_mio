@@ -25,7 +25,7 @@ export async function getResume(client: SupabaseClient) {
   const { data: publicData } = bucket.getPublicUrl(resumePath);
   const view = new URL(publicData.publicUrl);
   // A new version in the URL prevents browsers/CDNs from reusing the previous CV.
-  view.searchParams.set("v", file.updated_at || file.id);
+  view.searchParams.set("v", file.updated_at || file.id || resumePath);
   const download = new URL(view);
   download.searchParams.set("download", "Christopher-CV.pdf");
   return { viewUrl: view.href, downloadUrl: download.href };

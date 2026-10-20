@@ -28,7 +28,7 @@ export const GET: APIRoute = async () => {
     });
   }
 
-  const fixedUrls = [
+  const fixedUrls: Array<{ loc: string; priority: string; changefreq: string; lastmod?: string }> = [
     { loc: `${site}/`, priority: "1.0", changefreq: "monthly" },
     { loc: `${site}/articulos`, priority: "0.8", changefreq: "weekly" },
     { loc: `${site}/articles`, priority: "0.8", changefreq: "weekly" },
