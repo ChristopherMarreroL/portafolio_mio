@@ -1,0 +1,30 @@
+---
+const { src, title, lang = "en" } = Astro.props as { src: string; title: string; lang?: "es" | "en" };
+const es = lang === "es";
+---
+
+<div data-pdf-preview data-src={src} data-lang={lang} class="min-w-0 max-w-full">
+  <div class="mb-2 flex flex-wrap items-center gap-2" role="group" aria-label={es ? "Controles del PDF" : "PDF controls"}>
+    <button data-pdf-out type="button" disabled aria-label={es ? "Reducir zoom" : "Zoom out"} class="flex size-11 items-center justify-center rounded-lg border border-slate-300 text-xl disabled:opacity-40 dark:border-slate-700">−</button>
+    <button data-pdf-fit type="button" disabled class="min-h-11 rounded-lg border border-slate-300 px-3 text-sm disabled:opacity-40 dark:border-slate-700">{es ? "Ajustar" : "Fit page"}</button>
+    <button data-pdf-in type="button" disabled aria-label={es ? "Ampliar" : "Zoom in"} class="flex size-11 items-center justify-center rounded-lg border border-slate-300 text-xl disabled:opacity-40 dark:border-slate-700">+</button>
+    <output data-pdf-zoom class="text-xs text-slate-500 dark:text-slate-400" aria-live="polite"></output>
+  </div>
+  <div data-pdf-stage class="relative aspect-[4/3] max-h-[min(52dvh,32rem)] min-h-48 w-full overflow-auto overscroll-contain rounded-lg border border-slate-200 bg-slate-100 p-2 dark:border-slate-800 dark:bg-slate-900" tabindex="0" aria-label={es ? "Documento: usa los controles para ampliar y desliza para desplazarte" : "Document: use the zoom controls and scroll to move"}>
+    <div data-pdf-surface class="grid min-h-full w-max min-w-full place-items-center">
+      <canvas data-pdf-canvas role="img" aria-label={title} class="hidden bg-white shadow-sm"></canvas>
+    </div>
+  </div>
+  <p data-pdf-status role="status" aria-live="polite" class="mt-2 text-xs text-slate-500 dark:text-slate-400">{es ? "La vista previa se carga al abrir el certificado." : "The preview loads when you open the certificate."}</p>
+  <div data-pdf-pages class="mt-2 hidden flex-wrap items-center justify-center gap-2">
+    <button data-pdf-prev type="button" disabled class="min-h-11 rounded-lg border border-slate-300 px-3 text-sm disabled:opacity-40 dark:border-slate-700">{es ? "Anterior" : "Previous"}</button>
+    <output data-pdf-page class="text-sm" aria-live="polite"></output>
+    <button data-pdf-next type="button" disabled class="min-h-11 rounded-lg border border-slate-300 px-3 text-sm disabled:opacity-40 dark:border-slate-700">{es ? "Siguiente" : "Next"}</button>
+  </div>
+  <noscript><p class="mt-2 text-sm">{es ? "Abre el PDF completo con el enlace inferior para consultar el documento." : "Use the full PDF link below to view the document."}</p></noscript>
+</div>
+
+<script>
+  import { initPdfPreviews } from "../../lib/pdf-preview-client";
+  initPdfPreviews();
+</script>

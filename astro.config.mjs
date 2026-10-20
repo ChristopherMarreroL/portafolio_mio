@@ -12,5 +12,6 @@ export default defineConfig({
   }),
   vite: {
     plugins: [tailwind()],
+    optimizeDeps: { exclude: ['pdfjs-dist'] },
   },
 });

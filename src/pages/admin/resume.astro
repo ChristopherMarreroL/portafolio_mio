@@ -1,0 +1,119 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Currículum | Admin">
+  <h1 class="text-3xl font-semibold tracking-tight">Currículum</h1>
+  <p class="mt-2 text-slate-500 dark:text-slate-400">Administra el PDF que los visitantes pueden ver y descargar desde tu presentación.</p>
+
+  <section class="mt-6 rounded-xl border border-slate-200 p-5 dark:border-slate-800" aria-labelledby="current-resume-heading">
+    <h2 id="current-resume-heading" class="text-lg font-semibold">Documento actual</h2>
+    <p id="resume-status" class="mt-2 text-sm text-slate-500 dark:text-slate-400" role="status">Cargando currículum...</p>
+    <div id="resume-current" class="mt-4 hidden flex-wrap items-center gap-3">
+      <a id="resume-view" target="_blank" rel="noopener noreferrer" class="rounded-lg border border-slate-200 px-4 py-2 text-sm dark:border-slate-800">Ver CV <span class="sr-only">(abre en otra pestaña)</span></a>
+      <a id="resume-download" class="rounded-lg border border-slate-200 px-4 py-2 text-sm dark:border-slate-800">Descargar CV</a>
+      <button id="resume-delete" type="button" class="rounded-lg border border-red-300 px-4 py-2 text-sm text-red-600 dark:border-red-900 dark:text-red-400">Eliminar PDF</button>
+    </div>
+  </section>
+
+  <form id="resume-form" class="mt-6 grid gap-4 rounded-xl border border-slate-200 p-5 dark:border-slate-800">
+    <h2 class="text-lg font-semibold">Subir o reemplazar currículum</h2>
+    <p id="resume-help" class="text-sm text-slate-500 dark:text-slate-400">Solo PDF, máximo 5 MB. Al guardar, el documento se publica y reemplaza el anterior sin acumular archivos. Si eliminas el PDF, los botones dejarán de aparecer en el portafolio.</p>
+    <label for="resume-file" class="text-sm font-medium">Seleccionar PDF</label>
+    <input id="resume-file" type="file" accept=".pdf,application/pdf" required disabled aria-describedby="resume-help" class="w-full rounded-lg border border-slate-200 p-3 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-3 file:py-2 file:text-white dark:border-slate-800 dark:file:bg-white dark:file:text-slate-900" />
+    <div><button id="resume-save" type="submit" disabled class="rounded-lg bg-slate-900 px-4 py-2 text-white disabled:opacity-50 dark:bg-white dark:text-slate-900">Guardar PDF</button></div>
+  </form>
+  <p id="resume-message" class="mt-4 text-sm" role="status" aria-live="polite" aria-atomic="true"></p>
+
+  <script>
+    import { supabase } from "../../lib/supabase";
+    import { requireAdminSession, showMessage } from "../../lib/admin";
+    import { deleteResume, getResume, saveResume } from "../../lib/resume";
+
+    const form = document.getElementById("resume-form") as HTMLFormElement;
+    const input = document.getElementById("resume-file") as HTMLInputElement;
+    const save = document.getElementById("resume-save") as HTMLButtonElement;
+    const remove = document.getElementById("resume-delete") as HTMLButtonElement;
+    const current = document.getElementById("resume-current")!;
+    const status = document.getElementById("resume-status")!;
+    const view = document.getElementById("resume-view") as HTMLAnchorElement;
+    const download = document.getElementById("resume-download") as HTMLAnchorElement;
+    let busy = true;
+
+    function setBusy(value: boolean) {
+      busy = value;
+      form.setAttribute("aria-busy", String(value));
+      input.disabled = save.disabled = remove.disabled = value;
+    }
+
+    async function refresh() {
+      const resume = await getResume(supabase);
+      status.textContent = resume ? "CV disponible · PDF" : "Todavía no hay un currículum publicado.";
+      current.classList.toggle("hidden", !resume);
+      current.classList.toggle("flex", Boolean(resume));
+      if (resume) {
+        view.href = resume.viewUrl;
+        download.href = resume.downloadUrl;
+      } else {
+        view.removeAttribute("href");
+        download.removeAttribute("href");
+      }
+    }
+
+    function reportError(error: unknown) {
+      const detail = error && typeof error === "object" && "message" in error ? String(error.message) : "Error de conexión.";
+      showMessage("resume-message", `No se pudo completar la operación: ${detail}`, "error");
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (busy) return;
+      const file = input.files?.[0];
+      if (!file) return;
+      setBusy(true);
+      showMessage("resume-message", "Guardando PDF...");
+      try {
+        if (!await requireAdminSession()) return;
+        await saveResume(supabase, file);
+        form.reset();
+        showMessage("resume-message", "Currículum guardado. El PDF anterior fue reemplazado.", "success");
+        await refresh().catch(() => showMessage("resume-message", "El PDF se guardó, pero no se pudo actualizar la vista. Recarga la página.", "info"));
+      } catch (error) {
+        reportError(error);
+      } finally {
+        setBusy(false);
+      }
+    });
+
+    remove.addEventListener("click", async () => {
+      if (busy || !window.confirm("¿Eliminar el currículum del almacenamiento? Dejará de estar disponible para los visitantes.")) return;
+      setBusy(true);
+      showMessage("resume-message", "Eliminando PDF...");
+      try {
+        if (!await requireAdminSession()) return;
+        await deleteResume(supabase);
+        current.classList.add("hidden");
+        current.classList.remove("flex");
+        view.removeAttribute("href");
+        download.removeAttribute("href");
+        status.textContent = "Todavía no hay un currículum publicado.";
+        showMessage("resume-message", "Currículum eliminado del almacenamiento.", "success");
+      } catch (error) {
+        reportError(error);
+      } finally {
+        setBusy(false);
+      }
+    });
+
+    if (await requireAdminSession()) {
+      try {
+        await refresh();
+      } catch (error) {
+        status.textContent = "No se pudo consultar el documento actual. Comprueba la configuración de Supabase e inténtalo de nuevo.";
+        reportError(error);
+      } finally {
+        setBusy(false);
+      }
+    }
+  </script>
+</AdminLayout>
