@@ -59,12 +59,15 @@ Tambien existen ejemplos en `.env.example` y `sample/.env.example`.
 - `/admin/news`: listar, publicar/despublicar y eliminar articulos.
 - `/admin/news/new`: crear un articulo bilingue.
 - `/admin/news/edit/[id]`: editar un articulo.
+- `/admin/resume`: subir, ver, descargar, reemplazar o eliminar el currículum PDF.
 - Al reemplazar o eliminar contenido desde el panel, las imagenes subidas se retiran tambien de Supabase Storage.
 - Cada artículo admite hasta tres imágenes o PDF; el primer archivo funciona como portada y los restantes como galería.
 - Proyectos, formaciones y artículos muestran los PDF dentro de una vista previa y permiten abrir el documento completo.
 - La fecha de cada articulo se elige mediante un calendario interactivo en el panel.
 
 ## Contenido Publico
+- La presentación muestra «Ver CV» (en otra pestaña) y «Descargar CV», traducidos al inglés, solo cuando existe un PDF.
+- El mismo CV se ofrece en ambos idiomas; se actualiza desde el panel sin modificar código.
 - Proyectos publicos se leen desde Supabase `projects` con `published = true`.
 - Cursos, certificaciones, diplomas, reconocimientos y estudios se leen desde Supabase `credentials` con `published = true`.
 - Los articulos se publican en `/articulos` (espanol) y `/articles` (ingles), con una URL indexable por publicacion.
@@ -81,3 +84,11 @@ Tambien existen ejemplos en `.env.example` y `sample/.env.example`.
 - `src/types/content.ts`: tipos reutilizables de proyectos y credenciales.
 - `supabase/schema.sql`: schema, RLS y Storage.
 - `public/`: imagenes estaticas existentes.
+
+## Configurar el currículum (una sola vez)
+
+Ejecuta `supabase/migrations/20261020_resume.sql` en el SQL Editor de tu proyecto existente, o ejecuta `supabase/schema.sql` para una instalación nueva. Requiere la función `is_portfolio_admin()` que ya utiliza el panel. El SQL crea el bucket público `portfolio-resume`, acepta únicamente `application/pdf` hasta 5 MB y limita las cargas, reemplazos y eliminaciones a los administradores autorizados y al objeto `cv.pdf`. No necesita tablas ni claves secretas adicionales.
+
+Después entra a `/admin/resume`, selecciona el PDF y pulsa «Guardar PDF». Se publica inmediatamente. Puedes guardar otro PDF para sobrescribir el anterior sin borrarlo previamente ni acumular copias, o usar «Eliminar PDF» para retirarlo del almacenamiento y ocultar los botones públicos. Una carga fallida conserva el documento anterior. El panel comprueba extensión, tipo y cabecera PDF antes de subirlo; Storage también aplica el tipo MIME y el límite de tamaño.
+
+Los enlaces incluyen la versión del archivo para evitar reutilizar el CV anterior desde la caché. La descarga utiliza el parámetro `download` de [Supabase Storage](https://supabase.com/docs/guides/storage/serving/downloads) para guardar `Christopher-CV.pdf` incluso cuando el archivo se sirve desde otro dominio. Ejecutar el SQL en el proyecto remoto y desplegar el código son pasos separados de los cambios locales.
