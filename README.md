@@ -10,11 +10,12 @@ Sitio web construido con Astro, TypeScript, Tailwind CSS 4 y Supabase para prese
 
 ## Requisitos
 - Node.js 22.22.0 o superior (verificado con Node.js 24.14.0).
-- npm 9.6.5 o superior, o Bun como alternativa.
+- npm 9.6.5 o superior, o Bun 1.3.14 o superior como alternativa.
+- El archivo `bun.lock` fue generado y verificado con Bun 1.3.14. Las versiones anteriores de Bun no están soportadas para este archivo de bloqueo.
 
 ## Instalacion
 - Ejecuta `npm ci` para instalar las versiones fijadas en `package-lock.json`.
-- Si usas Bun, ejecuta `bun install --frozen-lockfile` para instalar las versiones fijadas en `bun.lock`.
+- Si usas Bun, comprueba primero `bun --version` (mínimo 1.3.14) y ejecuta `bun install --frozen-lockfile` para instalar las versiones fijadas en `bun.lock`.
 - Al modificar dependencias, actualiza y versiona ambos archivos de bloqueo.
 - Ejecuta `npm run dev` para desarrollo local.
 - Ejecuta `npm run build` para generar el build de produccion.
